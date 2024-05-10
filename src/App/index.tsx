@@ -229,7 +229,7 @@ function Flow() {
         connectionLineStyle={connectionLineStyle}
         fitView
       >
-        <Controls showInteractive={false} />
+        <Controls />
         <Panel position="top-left" className="header">
           EZ Flows by Danh
           <ToastContainer
