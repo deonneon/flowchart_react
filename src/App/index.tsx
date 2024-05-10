@@ -16,6 +16,9 @@ import useStore, { RFState } from "./store";
 import MindMapNode from "./MindMapNode";
 import MindMapEdge from "./MindMapEdge";
 
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 // we need to import the React Flow styles to make it work
 import "reactflow/dist/style.css";
 
@@ -137,6 +140,21 @@ function Flow() {
     }
   };
 
+  const saveToLocal = useCallback(() => {
+    const { nodes, edges } = useStore.getState();
+    localStorage.setItem("reactFlowState", JSON.stringify({ nodes, edges }));
+    toast("Saved current state!");
+  }, []);
+
+  const loadFromLocal = useCallback(() => {
+    const data = localStorage.getItem("reactFlowState");
+    if (data) {
+      const { nodes, edges } = JSON.parse(data);
+      useStore.setState({ nodes, edges });
+      toast("Restored last saved state!");
+    }
+  }, []);
+
   return (
     <ReactFlow
       nodes={nodes}
@@ -181,6 +199,21 @@ function Flow() {
             Curly
           </button>
         </div>
+        <button onClick={saveToLocal}>Save</button>
+        <button onClick={loadFromLocal} style={{ marginLeft: "10px" }}>
+          Restore
+        </button>
+        <ToastContainer
+          position="bottom-right"
+          autoClose={2000}
+          hideProgressBar={true}
+          newestOnTop={true}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+        />
       </Panel>
     </ReactFlow>
   );
