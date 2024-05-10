@@ -25,11 +25,10 @@ import "react-toastify/dist/ReactToastify.css";
 // we need to import the React Flow styles to make it work
 import "reactflow/dist/style.css";
 
+import DownloadButton from "./components/DownloadButton";
+
 import DownloadIcon from "@mui/icons-material/Download";
-import SaveIcon from "@mui/icons-material/Save";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
-import RestoreIcon from "@mui/icons-material/Restore";
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 
 const selector = (state: RFState) => ({
   nodes: state.nodes,
@@ -231,7 +230,6 @@ function Flow() {
       >
         <Controls />
         <Panel position="top-left" className="header">
-          EZ Flows by Danh
           <ToastContainer
             position="bottom-right"
             autoClose={2000}
@@ -243,6 +241,7 @@ function Flow() {
             draggable
             pauseOnHover
           />
+          <DownloadButton />
         </Panel>
         <div
           className="toolbar"
