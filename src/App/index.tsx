@@ -1,4 +1,4 @@
-import { useCallback, useRef, useEffect } from "react";
+import { useCallback, useRef, useEffect, useState } from "react";
 import ReactFlow, {
   ConnectionLineType,
   NodeOrigin,
@@ -9,8 +9,11 @@ import ReactFlow, {
   useStoreApi,
   Controls,
   Panel,
+  MiniMap,
+  Background,
 } from "reactflow";
 import shallow from "zustand/shallow";
+import { nanoid } from "nanoid";
 
 import useStore, { RFState } from "./store";
 import MindMapNode from "./MindMapNode";
@@ -18,6 +21,7 @@ import MindMapEdge from "./MindMapEdge";
 
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import ReactSwitch from "react-switch";
 
 // we need to import the React Flow styles to make it work
 import "reactflow/dist/style.css";
@@ -45,8 +49,24 @@ const defaultEdgeOptions = { style: connectionLineStyle, type: "mindmap" };
 
 function Flow() {
   const store = useStoreApi();
-  const { nodes, edges, onNodesChange, onEdgesChange, addChildNode } = useStore(
-    selector,
+  const {
+    nodes,
+    edges,
+    onNodesChange,
+    onEdgesChange,
+    addChildNode,
+    setDiagramType,
+    diagramType,
+  } = useStore(
+    (state) => ({
+      nodes: state.nodes,
+      edges: state.edges,
+      onNodesChange: state.onNodesChange,
+      onEdgesChange: state.onEdgesChange,
+      addChildNode: state.addChildNode,
+      diagramType: state.diagramType,
+      setDiagramType: state.setDiagramType,
+    }),
     shallow
   );
   const { project } = useReactFlow();
@@ -82,7 +102,6 @@ function Flow() {
   };
 
   const onConnectStart: OnConnectStart = useCallback((_, { nodeId }) => {
-    // we need to remember where the connection started so we can add the new node to the correct parent on connect end
     connectingNodeId.current = nodeId;
   }, []);
 
@@ -155,67 +174,165 @@ function Flow() {
     }
   }, []);
 
+  const addEmptyNode = () => {
+    // Here you can adjust the initial position and other properties of the new node
+    const position = { x: Math.random() * 400, y: Math.random() * 400 };
+    const newNode = {
+      id: nanoid(), // Generates a unique ID
+      type: "mindmap", // Assuming 'mindmap' is the type you use for new nodes
+      data: { label: "New Node" },
+      position,
+      dragHandle: ".dragHandle",
+    };
+
+    // Adding the new node to the state
+    useStore.setState((prevState) => ({
+      nodes: [...prevState.nodes, newNode],
+    }));
+  };
+
   return (
-    <ReactFlow
-      nodes={nodes}
-      edges={edges}
-      onNodesChange={onNodesChange}
-      onEdgesChange={onEdgesChange}
-      onConnectStart={onConnectStart}
-      onConnectEnd={onConnectEnd}
-      nodeTypes={nodeTypes}
-      edgeTypes={edgeTypes}
-      nodeOrigin={nodeOrigin}
-      defaultEdgeOptions={defaultEdgeOptions}
-      connectionLineStyle={connectionLineStyle}
-      fitView
-    >
-      <Controls showInteractive={false} />
-      <Panel position="top-left" className="header">
-        React Flow Mind Map
-        <br></br>
-        <button onClick={saveToJson}>Save Mind Map</button>
-        <input
-          type="file"
-          style={{ marginLeft: "10px" }}
-          onChange={handleUploadJson}
-          accept=".json"
-        />
-        <div style={{ marginTop: "2px" }}>
-          Line type -
-          <button
-            style={{ marginRight: "5px" }}
-            onClick={() => useStore.setState({ edgePathType: "smooth" })}
+    <>
+      <svg style={{ width: 0, height: 0, position: "absolute" }}>
+        <defs>
+          <marker
+            id="arrow"
+            markerWidth="10"
+            markerHeight="20"
+            refX="20" // Adjust this to control the point where the arrow points meet the target node
+            refY="3"
+            orient="auto"
+            markerUnits="strokeWidth"
+            viewBox="0 0 10 10"
           >
-            Step
+            <path d="M0,0 L0,6 L9,3 z" fill="#333" />
+          </marker>
+        </defs>
+      </svg>
+      <ReactFlow
+        nodes={nodes}
+        edges={edges}
+        onNodesChange={onNodesChange}
+        onEdgesChange={onEdgesChange}
+        onConnectStart={onConnectStart}
+        onConnectEnd={onConnectEnd}
+        nodeTypes={nodeTypes}
+        edgeTypes={edgeTypes}
+        nodeOrigin={nodeOrigin}
+        defaultEdgeOptions={defaultEdgeOptions}
+        connectionLineStyle={connectionLineStyle}
+        fitView
+      >
+        <Controls showInteractive={false} />
+        <Panel position="top-left" className="header">
+          EZ Flows by Danh
+          <br></br>
+          <button onClick={saveToJson}>Save Mind Map</button>
+          <input
+            type="file"
+            style={{ marginLeft: "10px" }}
+            onChange={handleUploadJson}
+            accept=".json"
+          />
+          <div style={{ marginTop: "2px" }}>
+            Line type -
+            <button
+              style={{ marginRight: "5px" }}
+              onClick={() => useStore.setState({ edgePathType: "smooth" })}
+            >
+              Step
+            </button>
+            <button
+              style={{ marginRight: "5px" }}
+              onClick={() => useStore.setState({ edgePathType: "straight" })}
+            >
+              Straight
+            </button>
+            <button
+              onClick={() => useStore.setState({ edgePathType: "bezier" })}
+            >
+              Curly
+            </button>
+          </div>
+          <button onClick={saveToLocal}>Save</button>
+          <button onClick={loadFromLocal} style={{ marginLeft: "10px" }}>
+            Restore
           </button>
-          <button
-            style={{ marginRight: "5px" }}
-            onClick={() => useStore.setState({ edgePathType: "straight" })}
+          <ToastContainer
+            position="bottom-right"
+            autoClose={2000}
+            hideProgressBar={true}
+            newestOnTop={true}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+          />
+          <button onClick={addEmptyNode}>Add Empty Node</button>
+        </Panel>
+        <div
+          style={{
+            position: "absolute",
+            top: "10px",
+            right: "10px",
+            zIndex: 999,
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              width: 200,
+            }}
           >
-            Straight
-          </button>
-          <button onClick={() => useStore.setState({ edgePathType: "bezier" })}>
-            Curly
-          </button>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                height: "100%",
+                fontSize: 15,
+                width: 100,
+                color: "black", // Adjust color as needed
+                paddingRight: 2, // Adjust spacing as needed
+              }}
+            >
+              Flow Chart
+            </div>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                height: "100%",
+                width: 100,
+                fontSize: 15,
+                color: "black", // Adjust color as needed
+                paddingLeft: 2, // Adjust spacing as needed
+              }}
+            >
+              Mind Map
+            </div>
+          </div>
+          <ReactSwitch
+            checked={diagramType === "flow"}
+            onChange={(checked) => setDiagramType(checked ? "flow" : "mindmap")}
+            onColor="#86d3ff"
+            onHandleColor="#2693e6"
+            handleDiameter={40}
+            uncheckedIcon={false}
+            checkedIcon={false}
+            boxShadow="0px 1px 3px rgba(0, 0, 0, 0.6)"
+            activeBoxShadow="0px 0px 1px 10px rgba(0, 0, 0, 0.2)"
+            height={40}
+            width={200}
+          />
         </div>
-        <button onClick={saveToLocal}>Save</button>
-        <button onClick={loadFromLocal} style={{ marginLeft: "10px" }}>
-          Restore
-        </button>
-        <ToastContainer
-          position="bottom-right"
-          autoClose={2000}
-          hideProgressBar={true}
-          newestOnTop={true}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-        />
-      </Panel>
-    </ReactFlow>
+        <Background />
+        <MiniMap />
+      </ReactFlow>
+    </>
   );
 }
 

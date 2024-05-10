@@ -10,17 +10,20 @@ import useStore from "../store";
 
 function MindMapEdge(props: EdgeProps) {
   const { sourceX, sourceY, targetX, targetY } = props;
-  const edgePathType = useStore((state) => state.edgePathType);
+  const { edgePathType, diagramType } = useStore((state) => ({
+    edgePathType: state.edgePathType,
+    diagramType: state.diagramType,
+  }));
 
   const getEdgePath = () => {
     switch (edgePathType) {
       case "smooth":
         return getSmoothStepPath({
           sourceX,
-          sourceY: sourceY + 18, // Adjust if necessary
+          sourceY: sourceY + 18,
           targetX,
           targetY,
-        })[0]; // Ensure to use only the path string
+        })[0];
       case "straight":
         return getStraightPath({
           sourceX,
@@ -45,9 +48,11 @@ function MindMapEdge(props: EdgeProps) {
     }
   };
 
-  const edgePath = getEdgePath(); // Ensuring this calls the function correctly
+  const markerEnd = diagramType === "flow" ? "url(#arrow)" : undefined;
 
-  return <BaseEdge path={edgePath} {...props} />;
+  const edgePath = getEdgePath();
+
+  return <BaseEdge path={edgePath} {...props} markerEnd={markerEnd} />;
 }
 
 export default MindMapEdge;

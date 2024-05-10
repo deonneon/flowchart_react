@@ -14,6 +14,8 @@ import { nanoid } from "nanoid/non-secure";
 
 import { NodeData } from "./MindMapNode";
 
+export type DiagramType = "mindmap" | "flow";
+
 export type RFState = {
   nodes: Node<NodeData>[];
   edges: Edge[];
@@ -22,9 +24,13 @@ export type RFState = {
   updateNodeLabel: (nodeId: string, label: string) => void;
   addChildNode: (parentNode: Node, position: XYPosition) => void;
   edgePathType: "smooth" | "straight" | "bezier";
+  diagramType: DiagramType;
+  setDiagramType: (diagramType: DiagramType) => void;
 };
 
 const useStore = create<RFState>((set, get) => ({
+  diagramType: "mindmap",
+  setDiagramType: (type) => set({ diagramType: type }),
   nodes: [
     {
       id: "root",
