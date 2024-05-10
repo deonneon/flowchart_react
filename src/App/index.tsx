@@ -279,55 +279,33 @@ function Flow() {
             zIndex: 999,
           }}
         >
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              width: 200,
-            }}
-          >
-            <div
+          <div>
+            <button
               style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                height: "100%",
-                fontSize: 15,
-                width: 100,
-                color: "black", // Adjust color as needed
-                paddingRight: 2, // Adjust spacing as needed
+                backgroundColor:
+                  diagramType === "flow" ? "#FFA500" : "lightgray",
+                color: "white",
+                padding: "10px 20px",
+                border: "0px",
+                borderRight: "none",
               }}
+              onClick={() => setDiagramType("flow")}
             >
-              Flow Chart
-            </div>
-            <div
+              Flow Diagram
+            </button>
+            <button
               style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                height: "100%",
-                width: 100,
-                fontSize: 15,
-                color: "black", // Adjust color as needed
-                paddingLeft: 2, // Adjust spacing as needed
+                backgroundColor:
+                  diagramType === "mindmap" ? "#FFA500" : "lightgray",
+                color: "white",
+                border: "0px",
+                padding: "10px 20px",
               }}
+              onClick={() => setDiagramType("mindmap")}
             >
               Mind Map
-            </div>
+            </button>
           </div>
-          <ReactSwitch
-            checked={diagramType === "flow"}
-            onChange={(checked) => setDiagramType(checked ? "flow" : "mindmap")}
-            onColor="#86d3ff"
-            onHandleColor="#2693e6"
-            handleDiameter={40}
-            uncheckedIcon={false}
-            checkedIcon={false}
-            boxShadow="0px 1px 3px rgba(0, 0, 0, 0.6)"
-            activeBoxShadow="0px 0px 1px 10px rgba(0, 0, 0, 0.2)"
-            height={40}
-            width={200}
-          />
         </div>
         <Background />
         <MiniMap />
