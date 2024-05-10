@@ -21,7 +21,6 @@ import MindMapEdge from "./MindMapEdge";
 
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import ReactSwitch from "react-switch";
 
 // we need to import the React Flow styles to make it work
 import "reactflow/dist/style.css";
