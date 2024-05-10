@@ -8,11 +8,11 @@ import {
   applyNodeChanges,
   applyEdgeChanges,
   XYPosition,
-} from 'reactflow';
-import create from 'zustand';
-import { nanoid } from 'nanoid/non-secure';
+} from "reactflow";
+import create from "zustand";
+import { nanoid } from "nanoid/non-secure";
 
-import { NodeData } from './MindMapNode';
+import { NodeData } from "./MindMapNode";
 
 export type RFState = {
   nodes: Node<NodeData>[];
@@ -21,19 +21,21 @@ export type RFState = {
   onEdgesChange: OnEdgesChange;
   updateNodeLabel: (nodeId: string, label: string) => void;
   addChildNode: (parentNode: Node, position: XYPosition) => void;
+  edgePathType: "smooth" | "straight" | "bezier";
 };
 
 const useStore = create<RFState>((set, get) => ({
   nodes: [
     {
-      id: 'root',
-      type: 'mindmap',
-      data: { label: 'React Flow Mind Map' },
+      id: "root",
+      type: "mindmap",
+      data: { label: "React Flow Mind Map" },
       position: { x: 0, y: 0 },
-      dragHandle: '.dragHandle',
+      dragHandle: ".dragHandle",
     },
   ],
   edges: [],
+  edgePathType: "straight",
   onNodesChange: (changes: NodeChange[]) => {
     set({
       nodes: applyNodeChanges(changes, get().nodes),
@@ -59,10 +61,10 @@ const useStore = create<RFState>((set, get) => ({
   addChildNode: (parentNode: Node, position: XYPosition) => {
     const newNode = {
       id: nanoid(),
-      type: 'mindmap',
-      data: { label: 'New Node' },
+      type: "mindmap",
+      data: { label: "New Node" },
       position,
-      dragHandle: '.dragHandle',
+      dragHandle: ".dragHandle",
       parentNode: parentNode.id,
     };
 

@@ -15,7 +15,6 @@ import shallow from "zustand/shallow";
 import useStore, { RFState } from "./store";
 import MindMapNode from "./MindMapNode";
 import MindMapEdge from "./MindMapEdge";
-import { saveAs } from "file-saver";
 
 // we need to import the React Flow styles to make it work
 import "reactflow/dist/style.css";
@@ -106,51 +105,37 @@ function Flow() {
     [getChildNodePosition]
   );
 
-  const handleSave = () => {
-    const graphData = {
-      nodes: nodes.map(({ position, data, id, type }) => ({
-        position,
-        data,
-        id,
-        type,
-      })),
-      edges: edges.map(({ source, target, id }) => ({ source, target, id })),
-    };
-    const blob = new Blob([JSON.stringify(graphData, null, 2)], {
+  const saveToJson = useCallback(() => {
+    const { nodes, edges } = useStore.getState();
+    const dataToSave = { nodes, edges };
+    const blob = new Blob([JSON.stringify(dataToSave, null, 2)], {
       type: "application/json",
     });
-    saveAs(blob, "mindMap.json");
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "mindmap.json";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  }, []);
+
+  const handleUploadJson = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        const text = e.target?.result;
+        if (typeof text === "string") {
+          const { nodes, edges } = JSON.parse(text);
+          useStore.setState({ nodes, edges });
+        }
+      };
+      reader.readAsText(file);
+    }
   };
-
-  useEffect(() => {
-    // This effect runs when the `nodes` or `edges` from the store change.
-    // It updates the React Flow instance to reflect the new state.
-    store.getState().setNodes(nodes);
-    store.getState().setEdges(edges);
-  }, [nodes, edges, store]);
-
-  const handleUpload = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      const file = event.target.files[0];
-      if (file) {
-        const fileReader = new FileReader();
-        fileReader.onload = (e) => {
-          const result = e.target?.result;
-          if (typeof result === "string") {
-            const { nodes, edges } = JSON.parse(result);
-            // Create new instances of nodes and edges to ensure Zustand sees a change
-            const newNodes = nodes.map((node) => ({ ...node }));
-            const newEdges = edges.map((edge) => ({ ...edge }));
-            // Update the store directly with new nodes and edges
-            store.getState().setNodes(newNodes);
-            store.getState().setEdges(newEdges);
-          }
-        };
-        fileReader.readAsText(file);
-      }
-    },
-    [store]
-  );
 
   return (
     <ReactFlow
@@ -164,20 +149,38 @@ function Flow() {
       edgeTypes={edgeTypes}
       nodeOrigin={nodeOrigin}
       defaultEdgeOptions={defaultEdgeOptions}
-      // connectionLineStyle={connectionLineStyle}
-      // connectionLineType={ConnectionLineType.Straight}
+      connectionLineStyle={connectionLineStyle}
       fitView
     >
       <Controls showInteractive={false} />
       <Panel position="top-left" className="header">
         React Flow Mind Map
         <br></br>
-        <button onClick={handleSave}>Save Diagram</button>
+        <button onClick={saveToJson}>Save Mind Map</button>
         <input
           type="file"
-          onChange={handleUpload}
           style={{ marginLeft: "10px" }}
+          onChange={handleUploadJson}
+          accept=".json"
         />
+        <div style={{ marginTop: "2px" }}>
+          Line type -
+          <button
+            style={{ marginRight: "5px" }}
+            onClick={() => useStore.setState({ edgePathType: "smooth" })}
+          >
+            Step
+          </button>
+          <button
+            style={{ marginRight: "5px" }}
+            onClick={() => useStore.setState({ edgePathType: "straight" })}
+          >
+            Straight
+          </button>
+          <button onClick={() => useStore.setState({ edgePathType: "bezier" })}>
+            Curly
+          </button>
+        </div>
       </Panel>
     </ReactFlow>
   );
