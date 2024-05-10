@@ -25,6 +25,12 @@ import "react-toastify/dist/ReactToastify.css";
 // we need to import the React Flow styles to make it work
 import "reactflow/dist/style.css";
 
+import DownloadIcon from "@mui/icons-material/Download";
+import SaveIcon from "@mui/icons-material/Save";
+import UploadFileIcon from "@mui/icons-material/UploadFile";
+import RestoreIcon from "@mui/icons-material/Restore";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+
 const selector = (state: RFState) => ({
   nodes: state.nodes,
   edges: state.edges,
@@ -188,6 +194,7 @@ function Flow() {
     useStore.setState((prevState) => ({
       nodes: [...prevState.nodes, newNode],
     }));
+    toast("Added new node!");
   };
 
   return (
@@ -225,16 +232,61 @@ function Flow() {
         <Controls showInteractive={false} />
         <Panel position="top-left" className="header">
           EZ Flows by Danh
-          <br></br>
-          <button onClick={saveToJson}>Save Mind Map</button>
+          <ToastContainer
+            position="bottom-right"
+            autoClose={2000}
+            hideProgressBar={true}
+            newestOnTop={true}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+          />
+        </Panel>
+        <div
+          className="toolbar"
+          style={{
+            position: "absolute",
+            bottom: 10,
+            left: 50,
+            zIndex: 100,
+            display: "flex",
+            gap: "10px",
+          }}
+        >
+          <button onClick={saveToJson} title="Download as JSON">
+            <DownloadIcon />
+          </button>
           <input
             type="file"
-            style={{ marginLeft: "10px" }}
+            id="fileInput"
+            style={{ display: "none" }}
             onChange={handleUploadJson}
             accept=".json"
           />
+          <label
+            htmlFor="fileInput"
+            style={{
+              cursor: "pointer",
+              border: "1px solid gray",
+              padding: "1px 9px",
+            }}
+            title="Load JSON"
+          >
+            <UploadFileIcon />
+          </label>
+          <button onClick={saveToLocal} title="Save Mind Map">
+            Save
+          </button>
+          <button onClick={loadFromLocal} title="Restore">
+            Restore
+          </button>
+          <button onClick={addEmptyNode} title="Add Empty Node">
+            Add Node
+          </button>
           <div style={{ marginTop: "2px" }}>
-            Line type -
+            <span>Line type </span>
             <button
               style={{ marginRight: "5px" }}
               onClick={() => useStore.setState({ edgePathType: "smooth" })}
@@ -253,23 +305,7 @@ function Flow() {
               Curly
             </button>
           </div>
-          <button onClick={saveToLocal}>Save</button>
-          <button onClick={loadFromLocal} style={{ marginLeft: "10px" }}>
-            Restore
-          </button>
-          <ToastContainer
-            position="bottom-right"
-            autoClose={2000}
-            hideProgressBar={true}
-            newestOnTop={true}
-            closeOnClick
-            rtl={false}
-            pauseOnFocusLoss
-            draggable
-            pauseOnHover
-          />
-          <button onClick={addEmptyNode}>Add Empty Node</button>
-        </Panel>
+        </div>
         <div
           style={{
             position: "absolute",
