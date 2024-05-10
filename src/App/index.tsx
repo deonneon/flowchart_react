@@ -18,6 +18,7 @@ import { nanoid } from "nanoid";
 import useStore, { RFState } from "./store";
 import MindMapNode from "./MindMapNode";
 import MindMapEdge from "./MindMapEdge";
+import { Button } from "@mui/material";
 
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -242,6 +243,13 @@ function Flow() {
             pauseOnHover
           />
           <DownloadButton />
+          <Button
+            variant="contained"
+            onClick={addEmptyNode}
+            title="Add Empty Node"
+          >
+            Add Node
+          </Button>
         </Panel>
         <div
           className="toolbar"
@@ -269,6 +277,7 @@ function Flow() {
             style={{
               cursor: "pointer",
               border: "1px solid gray",
+              backgroundColor: "rgb(239, 239, 239)",
               padding: "1px 9px",
             }}
             title="Load JSON"
@@ -280,9 +289,6 @@ function Flow() {
           </button>
           <button onClick={loadFromLocal} title="Restore">
             Restore
-          </button>
-          <button onClick={addEmptyNode} title="Add Empty Node">
-            Add Node
           </button>
           <div style={{ marginTop: "2px" }}>
             <span>Line type </span>
