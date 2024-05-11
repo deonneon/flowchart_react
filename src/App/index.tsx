@@ -30,6 +30,9 @@ import DownloadButton from "./components/DownloadButton";
 
 import DownloadIcon from "@mui/icons-material/Download";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
+import ShowChartIcon from "@mui/icons-material/ShowChart";
+import GestureIcon from "@mui/icons-material/Gesture";
+import HorizontalRuleIcon from "@mui/icons-material/HorizontalRule";
 
 const selector = (state: RFState) => ({
   nodes: state.nodes,
@@ -201,6 +204,18 @@ function Flow() {
     toast("Added new node!");
   };
 
+  const activeStyle = {
+    backgroundColor: "#4CAF50",
+    color: "white",
+  };
+
+  const inactiveStyle = {
+    marginRight: "5px",
+    padding: "10px",
+  };
+
+  const { edgePathType } = useStore();
+
   return (
     <>
       <svg style={{ width: 0, height: 0, position: "absolute" }}>
@@ -301,24 +316,36 @@ function Flow() {
               backgroundColor: "white",
             }}
           >
-            <span>Line type </span>
+            <span>Line Shape </span>
             <button
-              style={{ marginRight: "5px", padding: "10px" }}
-              onClick={() => useStore.setState({ edgePathType: "smooth" })}
-            >
-              Step
-            </button>
-            <button
-              style={{ marginRight: "5px", padding: "10px" }}
+              style={
+                edgePathType === "straight"
+                  ? { ...inactiveStyle, ...activeStyle }
+                  : inactiveStyle
+              }
               onClick={() => useStore.setState({ edgePathType: "straight" })}
             >
-              Straight
+              <HorizontalRuleIcon />
             </button>
             <button
-              style={{ padding: "10px" }}
+              style={
+                edgePathType === "bezier"
+                  ? { ...inactiveStyle, ...activeStyle }
+                  : inactiveStyle
+              }
               onClick={() => useStore.setState({ edgePathType: "bezier" })}
             >
-              Curly
+              <GestureIcon />
+            </button>
+            <button
+              style={
+                edgePathType === "smooth"
+                  ? { ...inactiveStyle, ...activeStyle }
+                  : inactiveStyle
+              }
+              onClick={() => useStore.setState({ edgePathType: "smooth" })}
+            >
+              <ShowChartIcon />
             </button>
           </div>
         </div>
