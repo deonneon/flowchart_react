@@ -54,9 +54,15 @@ npm run build
 ## Technologies
 
 React: UI library for building interactive UIs.
+
 React Flow: Library for building node-based graph applications.
+
 Vite: Build tool that aims to provide a faster and leaner development experience.
+
 Zustand: State management library.
+
 Material-UI: React UI framework for implementing Google's Material Design.
+
 React Toastify: Library for adding notifications to the application.
+
 html-to-image: Library to capture DOM nodes and turn them into images for download.
