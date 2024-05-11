@@ -4,9 +4,9 @@
 
 ## To Do
 
-[ ] Add capability to delete middle nodes and parent nodes
-[ ] Add more node types
-[ ] Hot key certain settings
+- [ ] Add capability to delete middle nodes and parent nodes
+- [ ] Add more node types
+- [ ] Hot key certain settings
 
 ## Description
 
