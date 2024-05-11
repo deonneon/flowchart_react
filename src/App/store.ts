@@ -11,6 +11,7 @@ import {
 } from "reactflow";
 import create from "zustand";
 import { nanoid } from "nanoid/non-secure";
+import { toast } from "react-toastify";
 
 import { NodeData } from "./MindMapNode";
 
@@ -32,13 +33,43 @@ export type RFState = {
 const useStore = create<RFState>((set, get) => ({
   diagramType: "mindmap",
   setDiagramType: (type) => set({ diagramType: type }),
-  deleteNode: (id) =>
-    set((state) => ({
-      nodes: state.nodes.filter((node) => node.id !== id),
-      edges: state.edges.filter(
-        (edge) => edge.source !== id && edge.target !== id
-      ),
-    })),
+  deleteNode: (id) => {
+    set((state) => {
+      const nodeToDelete = state.nodes.find((node) => node.id === id);
+      if (!nodeToDelete) {
+        toast.error("Node not found!", { position: "top-center" });
+        return {}; // Node ID not found
+      }
+
+      // Check if the node has any child nodes
+      const childNodes = state.nodes.filter((node) => node.parentNode === id);
+      if (childNodes.length > 0) {
+        toast.error("Cannot delete a node with children!", {
+          position: "top-center",
+        });
+        return {}; // Prevent deletion if there are child nodes
+      }
+
+      // Check if the node is a critical connector
+      const connectedEdges = state.edges.filter(
+        (edge) => edge.source === id || edge.target === id
+      );
+      if (connectedEdges.length > 2) {
+        toast.error("Node is a critical connector!", {
+          position: "top-center",
+        });
+        return {}; // Prevent deletion if it's a critical connector
+      }
+
+      // Proceed with deletion
+      return {
+        nodes: state.nodes.filter((node) => node.id !== id),
+        edges: state.edges.filter(
+          (edge) => edge.source !== id && edge.target !== id
+        ),
+      };
+    });
+  },
   nodes: [
     {
       id: "root",
