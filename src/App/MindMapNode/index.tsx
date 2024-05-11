@@ -1,9 +1,9 @@
-import { useLayoutEffect, useEffect, useRef } from 'react';
-import { Handle, NodeProps, Position } from 'reactflow';
+import { useLayoutEffect, useEffect, useRef, useState } from "react";
+import { Handle, NodeProps, Position } from "reactflow";
 
-import useStore from '../store';
+import useStore from "../store";
 
-import DragIcon from './DragIcon';
+import DragIcon from "./DragIcon";
 
 export type NodeData = {
   label: string;
@@ -12,6 +12,9 @@ export type NodeData = {
 function MindMapNode({ id, data }: NodeProps<NodeData>) {
   const inputRef = useRef<HTMLInputElement>(null);
   const updateNodeLabel = useStore((state) => state.updateNodeLabel);
+  const deleteNode = useStore((state) => state.deleteNode);
+
+  const [isHovered, setIsHovered] = useState(false);
 
   useEffect(() => {
     setTimeout(() => {
@@ -26,10 +29,30 @@ function MindMapNode({ id, data }: NodeProps<NodeData>) {
   }, [data.label.length]);
 
   return (
-    <>
+    <div
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
       <div className="inputWrapper">
         <div className="dragHandle">
           <DragIcon />
+          {isHovered && (
+            <div>
+              <button
+                style={{
+                  position: "absolute",
+                  borderRadius: "50%",
+                  backgroundColor: "pink",
+                  border: "0px",
+                  right: -17,
+                  bottom: -15,
+                }}
+                onClick={() => deleteNode(id)}
+              >
+                -
+              </button>
+            </div>
+          )}
         </div>
         <input
           value={data.label}
@@ -41,7 +64,7 @@ function MindMapNode({ id, data }: NodeProps<NodeData>) {
 
       <Handle type="target" position={Position.Top} />
       <Handle type="source" position={Position.Top} />
-    </>
+    </div>
   );
 }
 

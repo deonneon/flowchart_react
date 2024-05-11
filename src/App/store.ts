@@ -26,11 +26,19 @@ export type RFState = {
   edgePathType: "smooth" | "straight" | "bezier";
   diagramType: DiagramType;
   setDiagramType: (diagramType: DiagramType) => void;
+  deleteNode: (id: string) => void;
 };
 
 const useStore = create<RFState>((set, get) => ({
   diagramType: "mindmap",
   setDiagramType: (type) => set({ diagramType: type }),
+  deleteNode: (id) =>
+    set((state) => ({
+      nodes: state.nodes.filter((node) => node.id !== id),
+      edges: state.edges.filter(
+        (edge) => edge.source !== id && edge.target !== id
+      ),
+    })),
   nodes: [
     {
       id: "root",
