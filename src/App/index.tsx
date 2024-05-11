@@ -269,15 +269,7 @@ function Flow() {
           <button onClick={saveToJson} title="Download as JSON">
             <DownloadIcon />
           </button>
-          <input
-            type="file"
-            id="fileInput"
-            style={{ display: "none" }}
-            onChange={handleUploadJson}
-            accept=".json"
-          />
-          <label
-            htmlFor="fileInput"
+          <button
             style={{
               cursor: "pointer",
               border: "1px solid gray",
@@ -285,30 +277,45 @@ function Flow() {
               padding: "1px 9px",
             }}
             title="Load JSON"
+            onClick={() => document.getElementById("fileInput")?.click()}
           >
             <UploadFileIcon />
-          </label>
+          </button>
+          <input
+            type="file"
+            id="fileInput"
+            style={{ display: "none" }}
+            onChange={handleUploadJson}
+            accept=".json"
+          />
           <button onClick={saveToLocal} title="Save Mind Map">
             Save
           </button>
           <button onClick={loadFromLocal} title="Restore">
             Restore
           </button>
-          <div style={{ marginTop: "2px" }}>
+          <div
+            style={{
+              border: "1px solid gray",
+              padding: "7px",
+              backgroundColor: "white",
+            }}
+          >
             <span>Line type </span>
             <button
-              style={{ marginRight: "5px" }}
+              style={{ marginRight: "5px", padding: "10px" }}
               onClick={() => useStore.setState({ edgePathType: "smooth" })}
             >
               Step
             </button>
             <button
-              style={{ marginRight: "5px" }}
+              style={{ marginRight: "5px", padding: "10px" }}
               onClick={() => useStore.setState({ edgePathType: "straight" })}
             >
               Straight
             </button>
             <button
+              style={{ padding: "10px" }}
               onClick={() => useStore.setState({ edgePathType: "bezier" })}
             >
               Curly
@@ -327,28 +334,33 @@ function Flow() {
             <button
               style={{
                 backgroundColor:
-                  diagramType === "flow" ? "#FFA500" : "lightgray",
-                color: "white",
-                padding: "10px 20px",
-                border: "0px",
-                borderRight: "none",
-              }}
-              onClick={() => setDiagramType("flow")}
-            >
-              Flow Diagram
-            </button>
-            <button
-              style={{
-                backgroundColor:
                   diagramType === "mindmap" ? "#FFA500" : "lightgray",
                 color: "white",
                 border: "0px",
                 padding: "10px 20px",
+                borderRight: "none",
+                cursor: "pointer",
               }}
               onClick={() => setDiagramType("mindmap")}
             >
               Mind Map
             </button>
+            <button
+              style={{
+                backgroundColor:
+                  diagramType === "flow" ? "#FFA500" : "lightgray",
+                color: "white",
+                padding: "10px 20px",
+                border: "0px",
+                cursor: "pointer",
+              }}
+              onClick={() => setDiagramType("flow")}
+            >
+              Flow Diagram
+            </button>
+          </div>
+          <div style={{ color: "gray", textAlign: "right" }}>
+            EZ Mapper by Danh
           </div>
         </div>
         <Background />
