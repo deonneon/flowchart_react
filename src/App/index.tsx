@@ -111,7 +111,8 @@ function Flow() {
   }, []);
 
   const onConnectEnd: OnConnectEnd = useCallback(
-    (event) => {
+    (event: MouseEvent | TouchEvent) => {
+      // Accept both MouseEvent and TouchEvent
       const { nodeInternals } = store.getState();
       const targetIsPane = (event.target as Element).classList.contains(
         "react-flow__pane"
@@ -122,7 +123,10 @@ function Flow() {
         node.querySelector("input")?.focus({ preventScroll: true });
       } else if (targetIsPane && connectingNodeId.current) {
         const parentNode = nodeInternals.get(connectingNodeId.current);
-        const childNodePosition = getChildNodePosition(event, parentNode);
+        const childNodePosition = getChildNodePosition(
+          event as MouseEvent,
+          parentNode
+        ); // Cast event as MouseEvent
 
         if (parentNode && childNodePosition) {
           addChildNode(parentNode, childNodePosition);
