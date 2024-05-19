@@ -41,7 +41,7 @@ const ColorPalette = () => {
       style={{
         display: "flex",
         gap: "10px",
-        padding: "2px",
+        padding: "8px",
         backgroundColor: "rgb(239,239,239)",
         alignItems: "center",
         justifyContent: "center",
@@ -65,26 +65,12 @@ const ColorPalette = () => {
               backgroundColor: color,
               width: "30px",
               height: "30px",
-              borderRadius: "50%",
+              borderRadius: "12%",
               cursor: "pointer",
-              marginBottom: "2px",
-            }}
-          ></div>
-          <div
-            style={{
-              fontSize: "12px",
-              border: "1px solid black",
-              borderRadius: "5px",
-              backgroundColor: "white",
-              width: "20px",
-              height: "20px",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              cursor: "pointer",
-              userSelect: "none",
-              pointerEvents: selectedNodeId ? "auto" : "none",
-              color: selectedNodeId ? "black" : "white",
+              border: "1px solid gray",
             }}
           >
             {number}
