@@ -34,7 +34,7 @@ const ColorPalette = () => {
     return () => {
       window.removeEventListener("keydown", handleKeyPress);
     };
-  }, []);
+  }, [selectedNodeId]);
 
   return (
     <div
