@@ -318,9 +318,11 @@ function Flow() {
               border: "1px solid gray",
               padding: "7px",
               backgroundColor: "white",
+              display: "flex",
+              alignItems: "center",
             }}
           >
-            <span>Line Shape </span>
+            <span style={{ marginRight: "5px" }}>Line Shape </span>
             <button
               style={
                 edgePathType === "straight"
