@@ -30,6 +30,8 @@ export type RFState = {
   setDiagramType: (diagramType: DiagramType) => void;
   deleteNode: (id: string) => void;
   updateNodeColor: (nodeId: string, color: string) => void;
+  selectedNodeId: string | null;
+  setSelectedNodeId: (nodeId: string | null) => void;
 };
 
 const useStore = create<RFState>((set, get) => ({
@@ -72,6 +74,8 @@ const useStore = create<RFState>((set, get) => ({
       };
     });
   },
+  selectedNodeId: "root",
+  setSelectedNodeId: (nodeId) => set({ selectedNodeId: nodeId }),
   nodes: [
     {
       id: "root",
@@ -127,6 +131,7 @@ const useStore = create<RFState>((set, get) => ({
     set({
       nodes: [...get().nodes, newNode],
       edges: [...get().edges, newEdge],
+      selectedNodeId: newNode.id,
     });
   },
   updateNodeColor: (nodeId: string, color: string) => {

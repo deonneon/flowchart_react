@@ -34,6 +34,8 @@ import ShowChartIcon from "@mui/icons-material/ShowChart";
 import GestureIcon from "@mui/icons-material/Gesture";
 import HorizontalRuleIcon from "@mui/icons-material/HorizontalRule";
 
+import ColorPalette from "./components/ColorPalette";
+
 const selector = (state: RFState) => ({
   nodes: state.nodes,
   edges: state.edges,
@@ -65,6 +67,7 @@ function Flow() {
     addChildNode,
     setDiagramType,
     diagramType,
+    setSelectedNodeId,
   } = useStore(
     (state) => ({
       nodes: state.nodes,
@@ -74,6 +77,7 @@ function Flow() {
       addChildNode: state.addChildNode,
       diagramType: state.diagramType,
       setDiagramType: state.setDiagramType,
+      setSelectedNodeId: state.setSelectedNodeId,
     }),
     shallow
   );
@@ -200,6 +204,7 @@ function Flow() {
     useStore.setState((prevState) => ({
       nodes: [...prevState.nodes, newNode],
     }));
+    setSelectedNodeId(newNode.id);
     toast("Added new node!");
   };
 
@@ -347,6 +352,7 @@ function Flow() {
               <ShowChartIcon />
             </button>
           </div>
+          <ColorPalette />
         </div>
         <div
           style={{
