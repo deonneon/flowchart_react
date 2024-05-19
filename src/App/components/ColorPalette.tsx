@@ -47,6 +47,7 @@ const ColorPalette = () => {
         justifyContent: "center",
         borderRadius: "2px",
         border: "1px solid black",
+        position: "relative",
       }}
     >
       {colors.map(({ color, number }) => (
@@ -77,6 +78,16 @@ const ColorPalette = () => {
           </div>
         </div>
       ))}
+      <div
+        style={{
+          position: "absolute",
+          right: "8px",
+          bottom: "-5px",
+          fontSize: " 10px",
+        }}
+      >
+        Keyboard Shortcuts
+      </div>
     </div>
   );
 };
