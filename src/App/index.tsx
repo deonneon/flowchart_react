@@ -187,8 +187,7 @@ function Flow() {
   }, []);
 
   const addEmptyNode = () => {
-    // Here you can adjust the initial position and other properties of the new node
-    const position = { x: Math.random() * 400, y: Math.random() * 400 };
+    const position = { x: Math.random() * 200, y: Math.random() * 150 };
     const newNode = {
       id: nanoid(), // Generates a unique ID
       type: "mindmap", // Assuming 'mindmap' is the type you use for new nodes

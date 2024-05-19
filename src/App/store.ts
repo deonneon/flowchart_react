@@ -8,6 +8,7 @@ import {
   applyNodeChanges,
   applyEdgeChanges,
   XYPosition,
+  Position,
 } from "reactflow";
 import create from "zustand";
 import { nanoid } from "nanoid/non-secure";
@@ -28,6 +29,7 @@ export type RFState = {
   diagramType: DiagramType;
   setDiagramType: (diagramType: DiagramType) => void;
   deleteNode: (id: string) => void;
+  updateNodeColor: (nodeId: string, color: string) => void;
 };
 
 const useStore = create<RFState>((set, get) => ({
@@ -107,7 +109,10 @@ const useStore = create<RFState>((set, get) => ({
     const newNode = {
       id: nanoid(),
       type: "mindmap",
-      data: { label: "New Node" },
+      data: {
+        label: "New Node",
+        sourcePosition: Position.Left,
+      },
       position,
       dragHandle: ".dragHandle",
       parentNode: parentNode.id,
@@ -122,6 +127,16 @@ const useStore = create<RFState>((set, get) => ({
     set({
       nodes: [...get().nodes, newNode],
       edges: [...get().edges, newEdge],
+    });
+  },
+  updateNodeColor: (nodeId: string, color: string) => {
+    set({
+      nodes: get().nodes.map((node) => {
+        if (node.id === nodeId) {
+          node.data = { ...node.data, color };
+        }
+        return node;
+      }),
     });
   },
 }));
