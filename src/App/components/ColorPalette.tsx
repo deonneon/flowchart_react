@@ -23,8 +23,13 @@ const ColorPalette = () => {
   };
 
   const handleKeyPress = (event: KeyboardEvent) => {
+    const target = event.target as HTMLElement;
+    if (target.tagName.toLowerCase() === "input") {
+      // Don't change the color if the target is an input element
+      return;
+    }
     const colorObj = colors.find((c) => c.number === parseInt(event.key, 10));
-    if (colorObj) {
+    if (colorObj && selectedNodeId) {
       handleColorChange(colorObj.color);
     }
   };
