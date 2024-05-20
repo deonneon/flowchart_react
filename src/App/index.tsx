@@ -19,6 +19,7 @@ import MindMapNode from "./MindMapNode";
 import MindMapEdge from "./MindMapEdge";
 import TextBoxNode from "./nodegroup/Textbox";
 import BoundingBoxNode from "./nodegroup/BoundingBox";
+import DatabaseNode from "./nodegroup/Database";
 import { Button } from "@mui/material";
 
 import { ToastContainer, toast } from "react-toastify";
@@ -35,6 +36,7 @@ const nodeTypes = {
   mindmap: MindMapNode,
   textbox: TextBoxNode,
   boundingbox: BoundingBoxNode,
+  database: DatabaseNode,
 };
 
 const edgeTypes = {
@@ -55,6 +57,7 @@ function Flow() {
     onEdgesChange,
     addChildNode,
     setSelectedNodeId,
+    diagramType,
   } = useStore(
     (state) => ({
       nodes: state.nodes,
@@ -184,6 +187,23 @@ function Flow() {
     toast("Added new bounding box!");
   };
 
+  const addDatabaseNode = () => {
+    const position = { x: Math.random() * 200, y: Math.random() * 150 };
+    const newNode = {
+      id: nanoid(), // Generates a unique ID
+      type: "database",
+      data: { label: "Database Name" },
+      position,
+      dragHandle: ".dragHandle",
+    };
+
+    useStore.setState((prevState) => ({
+      nodes: [...prevState.nodes, newNode],
+    }));
+    setSelectedNodeId(newNode.id);
+    toast("Added new bounding box!");
+  };
+
   return (
     <>
       <svg style={{ width: 0, height: 0, position: "absolute" }}>
@@ -245,16 +265,28 @@ function Flow() {
             onClick={addEmptyTextNode}
             title="Add Text Box"
           >
-            Add Text Box
+            Add Text
           </Button>
-          <Button
-            style={{ marginLeft: "5px" }}
-            variant="contained"
-            onClick={addBoundingBoxNode}
-            title="Add Text Box"
-          >
-            Add Bounding Box
-          </Button>
+          {diagramType === "flow" && (
+            <>
+              <Button
+                style={{ marginLeft: "5px" }}
+                variant="contained"
+                onClick={addBoundingBoxNode}
+                title="Add Bounding Box"
+              >
+                Add Container
+              </Button>
+              <Button
+                style={{ marginLeft: "5px" }}
+                variant="contained"
+                onClick={addDatabaseNode}
+                title="Add Database Node"
+              >
+                Add Database
+              </Button>
+            </>
+          )}
         </Panel>
         <BottomToolbar />
         <DiagramTypeSwitcher nodes={nodes} setCenter={setCenter} />

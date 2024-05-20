@@ -89,3 +89,9 @@ body,
 .bounding-node {
   background-color: transparent !important;
 }
+
+.database-shape {
+  display: block;
+  stroke-width: 1;
+  fill: salmon;
+}
