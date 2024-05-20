@@ -39,6 +39,7 @@ const DiagramTypeSwitcher: React.FC<DiagramTypeSwitcherProps> = ({
             border: "0px",
             padding: "10px 20px",
             borderRight: "none",
+            borderRadius: "0px",
             cursor: "pointer",
           }}
           onClick={() => handleSetDiagramType("mindmap")}
@@ -51,6 +52,7 @@ const DiagramTypeSwitcher: React.FC<DiagramTypeSwitcherProps> = ({
             color: "white",
             padding: "10px 20px",
             border: "0px",
+            borderRadius: "0px",
             cursor: "pointer",
           }}
           onClick={() => handleSetDiagramType("flow")}

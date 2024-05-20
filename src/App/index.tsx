@@ -136,7 +136,6 @@ function Flow() {
       dragHandle: ".dragHandle",
     };
 
-    // Adding the new node to the state
     useStore.setState((prevState) => ({
       nodes: [...prevState.nodes, newNode],
     }));
