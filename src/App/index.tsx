@@ -1,6 +1,5 @@
 import { useCallback, useRef, useEffect, useState } from "react";
 import ReactFlow, {
-  ConnectionLineType,
   NodeOrigin,
   Node,
   OnConnectEnd,
@@ -52,6 +51,8 @@ const edgeTypes = {
   mindmap: MindMapEdge,
 };
 
+type DiagramType = "mindmap" | "flow";
+
 const nodeOrigin: NodeOrigin = [0.5, 0.5];
 
 const connectionLineStyle = { stroke: "#F6AD55", strokeWidth: 3 };
@@ -81,7 +82,7 @@ function Flow() {
     }),
     shallow
   );
-  const { project } = useReactFlow();
+  const { project, setCenter, fitView } = useReactFlow();
   const connectingNodeId = useRef<string | null>(null);
 
   const getChildNodePosition = (event: MouseEvent, parentNode?: Node) => {
@@ -219,6 +220,17 @@ function Flow() {
   };
 
   const { edgePathType } = useStore();
+
+  const handleSetDiagramType = (type: DiagramType) => {
+    setDiagramType(type);
+    if (type === "flow") {
+      const firstNode = nodes[0];
+      setCenter(firstNode.position.x + 200, firstNode.position.y);
+    }
+    if (type === "mindmap") {
+      setCenter(0, 0);
+    }
+  };
 
   return (
     <>
@@ -379,7 +391,7 @@ function Flow() {
                 borderRight: "none",
                 cursor: "pointer",
               }}
-              onClick={() => setDiagramType("mindmap")}
+              onClick={() => handleSetDiagramType("mindmap")}
             >
               Mind Map
             </button>
@@ -392,7 +404,7 @@ function Flow() {
                 border: "0px",
                 cursor: "pointer",
               }}
-              onClick={() => setDiagramType("flow")}
+              onClick={() => handleSetDiagramType("flow")}
             >
               Flow Diagram
             </button>
