@@ -267,6 +267,7 @@ function Flow() {
           />
           <DownloadButton />
           <Button
+            style={{ marginLeft: "5px" }}
             variant="contained"
             onClick={addEmptyNode}
             title="Add Empty Node"
@@ -283,6 +284,7 @@ function Flow() {
             zIndex: 100,
             display: "flex",
             gap: "10px",
+            borderRadius: "3px",
           }}
         >
           <button onClick={saveToJson} title="Download as JSON">
@@ -294,6 +296,7 @@ function Flow() {
               border: "1px solid gray",
               backgroundColor: "rgb(239, 239, 239)",
               padding: "1px 9px",
+              borderRadius: "3px",
             }}
             title="Load JSON"
             onClick={() => document.getElementById("fileInput")?.click()}
@@ -317,9 +320,10 @@ function Flow() {
             style={{
               border: "1px solid gray",
               padding: "7px",
-              backgroundColor: "white",
+              backgroundColor: "rgb(239, 239, 239)",
               display: "flex",
               alignItems: "center",
+              borderRadius: "3px",
             }}
           >
             <span style={{ marginRight: "5px" }}>Line Shape </span>
@@ -393,7 +397,13 @@ function Flow() {
               Flow Diagram
             </button>
           </div>
-          <div style={{ color: "gray", textAlign: "right" }}>
+          <div
+            style={{
+              color: "gray",
+              textAlign: "right",
+              fontSize: "10px",
+            }}
+          >
             EZ Mapper by Danh
           </div>
         </div>
