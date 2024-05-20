@@ -1,4 +1,4 @@
-import { useCallback, useRef, useEffect, useState } from "react";
+import { useCallback, useRef } from "react";
 import ReactFlow, {
   NodeOrigin,
   Node,
@@ -14,7 +14,7 @@ import ReactFlow, {
 import { shallow } from "zustand/shallow";
 import { nanoid } from "nanoid";
 
-import useStore, { RFState } from "./store";
+import useStore from "./store";
 import MindMapNode from "./MindMapNode";
 import MindMapEdge from "./MindMapEdge";
 import { Button } from "@mui/material";
@@ -26,22 +26,8 @@ import "react-toastify/dist/ReactToastify.css";
 import "reactflow/dist/style.css";
 
 import DownloadButton from "./components/DownloadButton";
-
-import DownloadIcon from "@mui/icons-material/Download";
-import UploadFileIcon from "@mui/icons-material/UploadFile";
-import ShowChartIcon from "@mui/icons-material/ShowChart";
-import GestureIcon from "@mui/icons-material/Gesture";
-import HorizontalRuleIcon from "@mui/icons-material/HorizontalRule";
-
-import ColorPalette from "./components/ColorPalette";
-
-const selector = (state: RFState) => ({
-  nodes: state.nodes,
-  edges: state.edges,
-  onNodesChange: state.onNodesChange,
-  onEdgesChange: state.onEdgesChange,
-  addChildNode: state.addChildNode,
-});
+import DiagramTypeSwitcher from "./components/DiagramSwitcher";
+import BottomToolbar from "./components/BottomToolbar";
 
 const nodeTypes = {
   mindmap: MindMapNode,
@@ -50,8 +36,6 @@ const nodeTypes = {
 const edgeTypes = {
   mindmap: MindMapEdge,
 };
-
-type DiagramType = "mindmap" | "flow";
 
 const nodeOrigin: NodeOrigin = [0.5, 0.5];
 
@@ -66,8 +50,6 @@ function Flow() {
     onNodesChange,
     onEdgesChange,
     addChildNode,
-    setDiagramType,
-    diagramType,
     setSelectedNodeId,
   } = useStore(
     (state) => ({
@@ -82,7 +64,7 @@ function Flow() {
     }),
     shallow
   );
-  const { project, setCenter, fitView } = useReactFlow();
+  const { project, setCenter } = useReactFlow();
   const connectingNodeId = useRef<string | null>(null);
 
   const getChildNodePosition = (event: MouseEvent, parentNode?: Node) => {
@@ -144,53 +126,6 @@ function Flow() {
     [getChildNodePosition]
   );
 
-  const saveToJson = useCallback(() => {
-    const { nodes, edges } = useStore.getState();
-    const dataToSave = { nodes, edges };
-    const blob = new Blob([JSON.stringify(dataToSave, null, 2)], {
-      type: "application/json",
-    });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = "mindmap.json";
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-  }, []);
-
-  const handleUploadJson = async (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = async (e) => {
-        const text = e.target?.result;
-        if (typeof text === "string") {
-          const { nodes, edges } = JSON.parse(text);
-          useStore.setState({ nodes, edges });
-        }
-      };
-      reader.readAsText(file);
-    }
-  };
-
-  const saveToLocal = useCallback(() => {
-    const { nodes, edges } = useStore.getState();
-    localStorage.setItem("reactFlowState", JSON.stringify({ nodes, edges }));
-    toast("Saved current state!");
-  }, []);
-
-  const loadFromLocal = useCallback(() => {
-    const data = localStorage.getItem("reactFlowState");
-    if (data) {
-      const { nodes, edges } = JSON.parse(data);
-      useStore.setState({ nodes, edges });
-      toast("Restored last saved state!");
-    }
-  }, []);
-
   const addEmptyNode = () => {
     const position = { x: Math.random() * 200, y: Math.random() * 150 };
     const newNode = {
@@ -207,29 +142,6 @@ function Flow() {
     }));
     setSelectedNodeId(newNode.id);
     toast("Added new node!");
-  };
-
-  const activeStyle = {
-    backgroundColor: "#4CAF50",
-    color: "white",
-  };
-
-  const inactiveStyle = {
-    marginRight: "5px",
-    padding: "10px",
-  };
-
-  const { edgePathType } = useStore();
-
-  const handleSetDiagramType = (type: DiagramType) => {
-    setDiagramType(type);
-    if (type === "flow") {
-      const firstNode = nodes[0];
-      setCenter(firstNode.position.x + 200, firstNode.position.y);
-    }
-    if (type === "mindmap") {
-      setCenter(0, 0);
-    }
   };
 
   return (
@@ -287,138 +199,8 @@ function Flow() {
             Add Node
           </Button>
         </Panel>
-        <div
-          className="toolbar"
-          style={{
-            position: "absolute",
-            bottom: 10,
-            left: 50,
-            zIndex: 100,
-            display: "flex",
-            gap: "10px",
-            borderRadius: "3px",
-          }}
-        >
-          <button onClick={saveToJson} title="Download as JSON">
-            <DownloadIcon />
-          </button>
-          <button
-            style={{
-              cursor: "pointer",
-              border: "1px solid gray",
-              backgroundColor: "rgb(239, 239, 239)",
-              padding: "1px 9px",
-              borderRadius: "3px",
-            }}
-            title="Load JSON"
-            onClick={() => document.getElementById("fileInput")?.click()}
-          >
-            <UploadFileIcon />
-          </button>
-          <input
-            type="file"
-            id="fileInput"
-            style={{ display: "none" }}
-            onChange={handleUploadJson}
-            accept=".json"
-          />
-          <button onClick={saveToLocal} title="Save Mind Map">
-            Save
-          </button>
-          <button onClick={loadFromLocal} title="Restore">
-            Restore
-          </button>
-          <div
-            style={{
-              border: "1px solid gray",
-              padding: "7px",
-              backgroundColor: "rgb(239, 239, 239)",
-              display: "flex",
-              alignItems: "center",
-              borderRadius: "3px",
-            }}
-          >
-            <span style={{ marginRight: "5px" }}>Line Shape </span>
-            <button
-              style={
-                edgePathType === "straight"
-                  ? { ...inactiveStyle, ...activeStyle }
-                  : inactiveStyle
-              }
-              onClick={() => useStore.setState({ edgePathType: "straight" })}
-            >
-              <HorizontalRuleIcon />
-            </button>
-            <button
-              style={
-                edgePathType === "bezier"
-                  ? { ...inactiveStyle, ...activeStyle }
-                  : inactiveStyle
-              }
-              onClick={() => useStore.setState({ edgePathType: "bezier" })}
-            >
-              <GestureIcon />
-            </button>
-            <button
-              style={
-                edgePathType === "smooth"
-                  ? { ...inactiveStyle, ...activeStyle }
-                  : inactiveStyle
-              }
-              onClick={() => useStore.setState({ edgePathType: "smooth" })}
-            >
-              <ShowChartIcon />
-            </button>
-          </div>
-          <ColorPalette />
-        </div>
-        <div
-          style={{
-            position: "absolute",
-            top: "10px",
-            right: "10px",
-            zIndex: 999,
-          }}
-        >
-          <div>
-            <button
-              style={{
-                backgroundColor:
-                  diagramType === "mindmap" ? "#FFA500" : "lightgray",
-                color: "white",
-                border: "0px",
-                padding: "10px 20px",
-                borderRight: "none",
-                cursor: "pointer",
-              }}
-              onClick={() => handleSetDiagramType("mindmap")}
-            >
-              Mind Map
-            </button>
-            <button
-              style={{
-                backgroundColor:
-                  diagramType === "flow" ? "#FFA500" : "lightgray",
-                color: "white",
-                padding: "10px 20px",
-                border: "0px",
-                cursor: "pointer",
-              }}
-              onClick={() => handleSetDiagramType("flow")}
-            >
-              Flow Diagram
-            </button>
-          </div>
-          <div
-            style={{
-              color: "gray",
-              textAlign: "right",
-              fontSize: "10px",
-            }}
-          >
-            EZ Mapper by Danh
-          </div>
-        </div>
+        <BottomToolbar />
+        <DiagramTypeSwitcher nodes={nodes} setCenter={setCenter} />
         <Background />
         <MiniMap />
       </ReactFlow>
