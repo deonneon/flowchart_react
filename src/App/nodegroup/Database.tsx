@@ -34,7 +34,7 @@ function DatabaseNode({ id, data }: NodeProps<NodeData>) {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onClick={() => setSelectedNodeId(id)}
-      style={{ backgroundColor: data.color }}
+      style={{ backgroundColor: "white" }}
     >
       <div className="inputWrapper">
         <div className="dragHandle">
@@ -65,7 +65,7 @@ function DatabaseNode({ id, data }: NodeProps<NodeData>) {
           style={{ stroke: "black", backgroundColor: "transparent" }}
         />
       </svg>
-      <Handle type="target" position={Position.Top} />
+      <Handle type="target" position={Position.Bottom} />
       <Handle
         type="source"
         position={Position.Top}
