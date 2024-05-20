@@ -17,6 +17,8 @@ import { nanoid } from "nanoid";
 import useStore from "./store";
 import MindMapNode from "./MindMapNode";
 import MindMapEdge from "./MindMapEdge";
+import TextBoxNode from "./nodegroup/Textbox";
+import BoundingBoxNode from "./nodegroup/BoundingBox";
 import { Button } from "@mui/material";
 
 import { ToastContainer, toast } from "react-toastify";
@@ -31,6 +33,8 @@ import BottomToolbar from "./components/BottomToolbar";
 
 const nodeTypes = {
   mindmap: MindMapNode,
+  textbox: TextBoxNode,
+  boundingbox: BoundingBoxNode,
 };
 
 const edgeTypes = {
@@ -143,6 +147,43 @@ function Flow() {
     toast("Added new node!");
   };
 
+  const addEmptyTextNode = () => {
+    const position = { x: Math.random() * 200, y: Math.random() * 150 };
+    const newNode = {
+      id: nanoid(), // Generates a unique ID
+      type: "textbox",
+      data: { label: "New Node" },
+      position,
+      dragHandle: ".dragHandle",
+    };
+
+    useStore.setState((prevState) => ({
+      nodes: [...prevState.nodes, newNode],
+    }));
+    setSelectedNodeId(newNode.id);
+    toast("Added new text box!");
+  };
+
+  const addBoundingBoxNode = () => {
+    const position = { x: Math.random() * 200, y: Math.random() * 150 };
+    const newNode = {
+      id: nanoid(), // Generates a unique ID
+      type: "boundingbox",
+      data: { label: "Header" },
+      position,
+      dragHandle: ".dragHandle",
+      style: {
+        border: "1px solid black",
+      },
+    };
+
+    useStore.setState((prevState) => ({
+      nodes: [...prevState.nodes, newNode],
+    }));
+    setSelectedNodeId(newNode.id);
+    toast("Added new bounding box!");
+  };
+
   return (
     <>
       <svg style={{ width: 0, height: 0, position: "absolute" }}>
@@ -179,6 +220,7 @@ function Flow() {
         <Panel position="top-left" className="header">
           <ToastContainer
             position="bottom-right"
+            style={{ marginBottom: "20vh", width: "13%", fontSize: "0.7rem" }}
             autoClose={2000}
             hideProgressBar={true}
             newestOnTop={true}
@@ -196,6 +238,22 @@ function Flow() {
             title="Add Empty Node"
           >
             Add Node
+          </Button>
+          <Button
+            style={{ marginLeft: "5px" }}
+            variant="contained"
+            onClick={addEmptyTextNode}
+            title="Add Text Box"
+          >
+            Add Text Box
+          </Button>
+          <Button
+            style={{ marginLeft: "5px" }}
+            variant="contained"
+            onClick={addBoundingBoxNode}
+            title="Add Text Box"
+          >
+            Add Bounding Box
           </Button>
         </Panel>
         <BottomToolbar />
