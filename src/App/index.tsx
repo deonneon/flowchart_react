@@ -12,7 +12,7 @@ import ReactFlow, {
   MiniMap,
   Background,
 } from "reactflow";
-import shallow from "zustand/shallow";
+import { shallow } from "zustand/shallow";
 import { nanoid } from "nanoid";
 
 import useStore, { RFState } from "./store";
