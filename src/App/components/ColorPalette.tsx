@@ -50,7 +50,7 @@ const ColorPalette = () => {
         backgroundColor: "rgb(239,239,239)",
         alignItems: "center",
         justifyContent: "center",
-        borderRadius: "2px",
+        borderRadius: "3px",
         border: "1px solid black",
         position: "relative",
       }}

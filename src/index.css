@@ -81,3 +81,17 @@ body,
   background: rgba(255, 255, 255, 0.25);
   pointer-events: all;
 }
+
+.textbox-node {
+  background-color: transparent !important;
+}
+
+.bounding-node {
+  background-color: transparent !important;
+}
+
+.database-shape {
+  display: block;
+  stroke-width: 1;
+  fill: salmon;
+}

@@ -10,7 +10,7 @@ import {
   XYPosition,
   Position,
 } from "reactflow";
-import create from "zustand";
+import { createWithEqualityFn } from "zustand/traditional";
 import { nanoid } from "nanoid/non-secure";
 import { toast } from "react-toastify";
 
@@ -34,7 +34,7 @@ export type RFState = {
   setSelectedNodeId: (nodeId: string | null) => void;
 };
 
-const useStore = create<RFState>((set, get) => ({
+const useStore = createWithEqualityFn<RFState>((set, get) => ({
   diagramType: "mindmap",
   setDiagramType: (type) => set({ diagramType: type }),
   deleteNode: (id) => {
