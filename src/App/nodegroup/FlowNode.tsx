@@ -9,7 +9,7 @@ export type NodeData = {
   color?: string;
 };
 
-const TextBoxNode = ({ id, data }: NodeProps<NodeData>) => {
+function FlowNode({ id, data }: NodeProps<NodeData>) {
   const inputRef = useRef<HTMLInputElement>(null);
   const updateNodeLabel = useStore((state) => state.updateNodeLabel);
   const deleteNode = useStore((state) => state.deleteNode);
@@ -31,12 +31,10 @@ const TextBoxNode = ({ id, data }: NodeProps<NodeData>) => {
 
   return (
     <div
-      style={{
-        padding: "5px",
-      }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onClick={() => setSelectedNodeId(id)}
+      style={{ backgroundColor: data.color }}
     >
       <div className="inputWrapper">
         <div className="dragHandle">
@@ -66,15 +64,15 @@ const TextBoxNode = ({ id, data }: NodeProps<NodeData>) => {
           ref={inputRef}
         />
       </div>
+      <Handle type="target" position={Position.Bottom} isConnectable={true} />
       <Handle
-        className="textbox-node"
         type="source"
         position={Position.Right}
+        style={{ backgroundColor: data.color }}
         isConnectable={true}
       />
-      <Handle type="target" position={Position.Left} isConnectable={true} />
     </div>
   );
-};
+}
 
-export default TextBoxNode;
+export default FlowNode;
