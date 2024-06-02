@@ -57,6 +57,8 @@ function Flow() {
     addChildNode,
     setSelectedNodeId,
     diagramType,
+    selectedNodeId,
+    deleteNode,
   } = useStore(
     (state) => ({
       nodes: state.nodes,
@@ -67,6 +69,8 @@ function Flow() {
       diagramType: state.diagramType,
       setDiagramType: state.setDiagramType,
       setSelectedNodeId: state.setSelectedNodeId,
+      selectedNodeId: state.selectedNodeId,
+      deleteNode: state.deleteNode,
     }),
     shallow
   );
@@ -216,6 +220,19 @@ function Flow() {
     setSelectedNodeId(newNode.id);
     toast("Added new bounding box!");
   };
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Delete" && selectedNodeId) {
+        deleteNode(selectedNodeId);
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [deleteNode, selectedNodeId]);
 
   return (
     <>
