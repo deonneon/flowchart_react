@@ -31,12 +31,14 @@ import "reactflow/dist/style.css";
 import DownloadButton from "./components/DownloadButton";
 import DiagramTypeSwitcher from "./components/DiagramSwitcher";
 import BottomToolbar from "./components/BottomToolbar";
+import FlowNode from "./nodegroup/FlowNode";
 
 const nodeTypes = {
   mindmap: MindMapNode,
   textbox: TextBoxNode,
   boundingbox: BoundingBoxNode,
   database: DatabaseNode,
+  flowmap: FlowNode,
 };
 
 const edgeTypes = {
@@ -148,7 +150,7 @@ function Flow() {
     const position = { x: Math.random() * 200, y: Math.random() * 150 };
     const newNode = {
       id: nanoid(), // Generates a unique ID
-      type: "mindmap", // Assuming 'mindmap' is the type you use for new nodes
+      type: diagramType === "mindmap" ? "mindmap" : "flowmap",
       data: { label: "New Node" },
       position,
       dragHandle: ".dragHandle",

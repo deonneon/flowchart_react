@@ -64,12 +64,11 @@ function FlowNode({ id, data }: NodeProps<NodeData>) {
           ref={inputRef}
         />
       </div>
-      <Handle type="target" position={Position.Bottom} isConnectable={true} />
+      <Handle type="target" position={Position.Top} />
       <Handle
         type="source"
-        position={Position.Right}
+        position={Position.Top}
         style={{ backgroundColor: data.color }}
-        isConnectable={true}
       />
     </div>
   );

@@ -28,9 +28,9 @@ const mindmapRootNode = {
 
 const flowRootNode = {
   id: "flow-root",
-  type: "mindmap",
+  type: "flowmap",
   data: { label: "Enter Topic to Start (Flow)" },
-  position: { x: -200, y: 0 },
+  position: { x: 0, y: 0 },
   dragHandle: ".dragHandle",
 };
 
@@ -117,9 +117,9 @@ const useStore = createWithEqualityFn<RFState>((set, get) => ({
       };
     });
   },
-  selectedNodeId: "mindmap-root",
+  selectedNodeId: "flow-root",
   setSelectedNodeId: (nodeId) => set({ selectedNodeId: nodeId }),
-  nodes: [mindmapRootNode],
+  nodes: [flowRootNode],
   edges: [],
   edgePathType: "straight",
   onNodesChange: (changes: NodeChange[]) => {
@@ -147,7 +147,7 @@ const useStore = createWithEqualityFn<RFState>((set, get) => ({
   addChildNode: (parentNode: Node, position: XYPosition) => {
     const newNode = {
       id: nanoid(),
-      type: "mindmap",
+      type: get().diagramType === "mindmap" ? "mindmap" : "flowmap",
       data: {
         label: "New Node",
         sourcePosition: Position.Left,
