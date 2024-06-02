@@ -1,4 +1,4 @@
-import { useCallback, useRef } from "react";
+import { useCallback, useRef, useEffect } from "react";
 import ReactFlow, {
   NodeOrigin,
   Node,
@@ -70,6 +70,14 @@ function Flow() {
   );
   const { project, setCenter } = useReactFlow();
   const connectingNodeId = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (diagramType === "mindmap") {
+      setSelectedNodeId("mindmap-root");
+    } else if (diagramType === "flow") {
+      setSelectedNodeId("flow-root");
+    }
+  }, [diagramType, setSelectedNodeId]);
 
   const connectionLineStyle = {
     stroke: diagramType === "mindmap" ? "#F6AD55" : "#000000",

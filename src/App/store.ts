@@ -18,6 +18,22 @@ import { NodeData } from "./MindMapNode";
 
 export type DiagramType = "mindmap" | "flow";
 
+const mindmapRootNode = {
+  id: "mindmap-root",
+  type: "mindmap",
+  data: { label: "Enter Topic to Start (Mindmap)" },
+  position: { x: 0, y: 0 },
+  dragHandle: ".dragHandle",
+};
+
+const flowRootNode = {
+  id: "flow-root",
+  type: "mindmap",
+  data: { label: "Enter Topic to Start (Flow)" },
+  position: { x: -200, y: 0 },
+  dragHandle: ".dragHandle",
+};
+
 export type RFState = {
   nodes: Node<NodeData>[];
   edges: Edge[];
@@ -38,7 +54,10 @@ export type RFState = {
 
 const useStore = createWithEqualityFn<RFState>((set, get) => ({
   diagramType: "flow",
-  setDiagramType: (type) => set({ diagramType: type }),
+  setDiagramType: (type) => {
+    const nodes = type === "mindmap" ? [mindmapRootNode] : [flowRootNode];
+    set({ diagramType: type, nodes, edges: [] });
+  },
 
   updateBoundingBoxStyle: (nodeId, borderStyle: string) => {
     set({
@@ -98,17 +117,9 @@ const useStore = createWithEqualityFn<RFState>((set, get) => ({
       };
     });
   },
-  selectedNodeId: "root",
+  selectedNodeId: "mindmap-root",
   setSelectedNodeId: (nodeId) => set({ selectedNodeId: nodeId }),
-  nodes: [
-    {
-      id: "root",
-      type: "mindmap",
-      data: { label: "Enter Topic to Start" },
-      position: { x: 0, y: 0 },
-      dragHandle: ".dragHandle",
-    },
-  ],
+  nodes: [mindmapRootNode],
   edges: [],
   edgePathType: "straight",
   onNodesChange: (changes: NodeChange[]) => {
