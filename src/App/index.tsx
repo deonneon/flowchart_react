@@ -45,9 +45,6 @@ const edgeTypes = {
 
 const nodeOrigin: NodeOrigin = [0.5, 0.5];
 
-const connectionLineStyle = { stroke: "#F6AD55", strokeWidth: 3 };
-const defaultEdgeOptions = { style: connectionLineStyle, type: "mindmap" };
-
 function Flow() {
   const store = useStoreApi();
   const {
@@ -73,6 +70,12 @@ function Flow() {
   );
   const { project, setCenter } = useReactFlow();
   const connectingNodeId = useRef<string | null>(null);
+
+  const connectionLineStyle = {
+    stroke: diagramType === "mindmap" ? "#F6AD55" : "#000000",
+    strokeWidth: diagramType === "mindmap" ? 3 : 2,
+  };
+  const defaultEdgeOptions = { style: connectionLineStyle, type: "mindmap" };
 
   const getChildNodePosition = (event: MouseEvent, parentNode?: Node) => {
     const { domNode } = store.getState();
