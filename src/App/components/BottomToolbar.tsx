@@ -179,14 +179,31 @@ const BottomToolbar: React.FC = () => {
       </div>
       <ColorPalette />
       {selectedNode && selectedNode.type === "boundingbox" && (
-        <>
-          <button onClick={toggleBorderStyle} title="Toggle Border Style">
+        <div
+          style={{
+            border: "1px solid gray",
+            padding: "7px",
+            backgroundColor: "rgb(239, 239, 239)",
+            display: "flex",
+            alignItems: "center",
+            borderRadius: "3px",
+          }}
+        >
+          <button
+            onClick={toggleBorderStyle}
+            title="Toggle Border Style"
+            style={{ ...inactiveStyle }}
+          >
             <PowerInputIcon />
           </button>
-          <button onClick={toggleBorderRadius} title="Toggle Border Radius">
+          <button
+            onClick={toggleBorderRadius}
+            style={{ ...inactiveStyle }}
+            title="Toggle Border Radius"
+          >
             <BorderStyleIcon />
           </button>
-        </>
+        </div>
       )}
     </div>
   );
