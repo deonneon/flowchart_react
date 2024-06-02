@@ -1,4 +1,4 @@
-import { useLayoutEffect, useEffect, useRef, useState, memo } from "react";
+import { useState, memo } from "react";
 import { NodeProps, Position, NodeResizeControl } from "reactflow";
 import useStore from "../store";
 import DragIcon from "./DragIcon";
@@ -38,24 +38,10 @@ function ResizeIcon() {
 }
 
 const BoundingBoxNode = ({ id, data, selected }: NodeProps<NodeData>) => {
-  const inputRef = useRef<HTMLInputElement>(null);
-  const updateNodeLabel = useStore((state) => state.updateNodeLabel);
   const deleteNode = useStore((state) => state.deleteNode);
   const setSelectedNodeId = useStore((state) => state.setSelectedNodeId);
 
   const [isHovered, setIsHovered] = useState(false);
-
-  useEffect(() => {
-    setTimeout(() => {
-      inputRef.current?.focus({ preventScroll: true });
-    }, 1);
-  }, []);
-
-  useLayoutEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.style.width = `${data.label.length * 8}px`;
-    }
-  }, [data.label.length]);
 
   return (
     <div
