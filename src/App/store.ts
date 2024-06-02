@@ -32,11 +32,35 @@ export type RFState = {
   updateNodeColor: (nodeId: string, color: string) => void;
   selectedNodeId: string | null;
   setSelectedNodeId: (nodeId: string | null) => void;
+  updateBoundingBoxStyle: (nodeId: string, borderStyle: string) => void;
+  updateBoundingBoxRadius: (nodeId: string, borderRadius: string) => void;
 };
 
 const useStore = createWithEqualityFn<RFState>((set, get) => ({
   diagramType: "mindmap",
   setDiagramType: (type) => set({ diagramType: type }),
+
+  updateBoundingBoxStyle: (nodeId, borderStyle: string) => {
+    set({
+      nodes: get().nodes.map((node) => {
+        if (node.id === nodeId && node.type === "boundingbox") {
+          node.style = { ...node.style, border: borderStyle };
+        }
+        return node;
+      }),
+    });
+  },
+  updateBoundingBoxRadius: (nodeId: string, borderRadius: string) => {
+    set({
+      nodes: get().nodes.map((node) => {
+        if (node.id === nodeId && node.type === "boundingbox") {
+          node.style = { ...node.style, borderRadius };
+        }
+        return node;
+      }),
+    });
+  },
+
   deleteNode: (id) => {
     set((state) => {
       const nodeToDelete = state.nodes.find((node) => node.id === id);

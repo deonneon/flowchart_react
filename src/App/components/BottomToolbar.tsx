@@ -9,9 +9,17 @@ import GestureIcon from "@mui/icons-material/Gesture";
 import HorizontalRuleIcon from "@mui/icons-material/HorizontalRule";
 import useStore from "../store";
 import ColorPalette from "./ColorPalette";
+import PowerInputIcon from "@mui/icons-material/PowerInput";
+import BorderStyleIcon from "@mui/icons-material/BorderStyle";
 
 const BottomToolbar: React.FC = () => {
-  const { edgePathType } = useStore();
+  const {
+    edgePathType,
+    selectedNodeId,
+    nodes,
+    updateBoundingBoxStyle,
+    updateBoundingBoxRadius,
+  } = useStore();
 
   const saveToJson = () => {
     const { nodes, edges } = useStore.getState();
@@ -62,6 +70,28 @@ const BottomToolbar: React.FC = () => {
 
   const inactiveStyle = { marginRight: "5px", padding: "10px" };
   const activeStyle = { backgroundColor: "#4CAF50", color: "white" };
+
+  const selectedNode = nodes.find((node) => node.id === selectedNodeId);
+
+  const toggleBorderStyle = () => {
+    if (selectedNode && selectedNode.type === "boundingbox") {
+      const currentBorderStyle =
+        selectedNode.style?.border || "1px solid black";
+      const newBorderStyle =
+        currentBorderStyle === "1px solid black"
+          ? "1px dashed black"
+          : "1px solid black";
+      updateBoundingBoxStyle(selectedNodeId!, newBorderStyle);
+    }
+  };
+
+  const toggleBorderRadius = () => {
+    if (selectedNode && selectedNode.type === "boundingbox") {
+      const currentBorderRadius = selectedNode.style?.borderRadius || "0px";
+      const newBorderRadius = currentBorderRadius === "0px" ? "10px" : "0px";
+      updateBoundingBoxRadius(selectedNodeId!, newBorderRadius);
+    }
+  };
 
   return (
     <div
@@ -148,6 +178,16 @@ const BottomToolbar: React.FC = () => {
         </button>
       </div>
       <ColorPalette />
+      {selectedNode && selectedNode.type === "boundingbox" && (
+        <>
+          <button onClick={toggleBorderStyle} title="Toggle Border Style">
+            <PowerInputIcon />
+          </button>
+          <button onClick={toggleBorderRadius} title="Toggle Border Radius">
+            <BorderStyleIcon />
+          </button>
+        </>
+      )}
     </div>
   );
 };

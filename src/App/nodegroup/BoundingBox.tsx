@@ -7,6 +7,7 @@ export type NodeData = {
   label: string;
   sourcePosition?: Position;
   color?: string;
+  style?: React.CSSProperties;
 };
 
 const controlStyle = {
@@ -94,7 +95,13 @@ const BoundingBoxNode = ({ id, data, selected }: NodeProps<NodeData>) => {
           </div>
         </NodeResizeControl>
       )}
-      <div style={{ padding: 10, minHeight: 40, minWidth: 100 }}></div>
+      <div
+        style={{
+          padding: 10,
+          minHeight: 40,
+          minWidth: 100,
+        }}
+      ></div>
     </div>
   );
 };
