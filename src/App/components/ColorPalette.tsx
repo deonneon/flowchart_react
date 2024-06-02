@@ -2,14 +2,15 @@ import React, { useEffect } from "react";
 import useStore from "../store";
 
 const colors = [
-  { color: "yellow", number: 1 },
-  { color: "red", number: 2 },
-  { color: "green", number: 3 },
-  { color: "blue", number: 4 },
-  { color: "orange", number: 5 },
-  { color: "purple", number: 6 },
-  { color: "pink", number: 7 },
-  { color: "brown", number: 8 },
+  { color: "#ff6b6b", number: 1 },
+  { color: "#f0e68c", number: 2 },
+  { color: "#a1c084", number: 3 },
+  { color: "#3498db", number: 4 },
+  { color: "#8e44ad", number: 5 },
+  { color: "#ffda79", number: 6 },
+  { color: "#48c9b0", number: 7 },
+  { color: "#e74c3c", number: 8 },
+  { color: "#f6ad55", number: 9 },
 ];
 
 const ColorPalette = () => {
