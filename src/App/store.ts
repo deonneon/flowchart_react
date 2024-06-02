@@ -37,7 +37,7 @@ export type RFState = {
 };
 
 const useStore = createWithEqualityFn<RFState>((set, get) => ({
-  diagramType: "mindmap",
+  diagramType: "flow",
   setDiagramType: (type) => set({ diagramType: type }),
 
   updateBoundingBoxStyle: (nodeId, borderStyle: string) => {
