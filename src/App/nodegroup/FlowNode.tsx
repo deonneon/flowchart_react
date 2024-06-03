@@ -20,6 +20,7 @@ function FlowNode({ id, data }: NodeProps<NodeData>) {
   useEffect(() => {
     setTimeout(() => {
       inputRef.current?.focus({ preventScroll: true });
+      inputRef.current?.select();
     }, 1);
   }, []);
 

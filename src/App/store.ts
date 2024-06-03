@@ -21,7 +21,7 @@ export type DiagramType = "mindmap" | "flow";
 const mindmapRootNode = {
   id: "mindmap-root",
   type: "mindmap",
-  data: { label: "Enter Topic to Start (Mindmap)" },
+  data: { label: "Enter Topic to Start" },
   position: { x: 0, y: 0 },
   dragHandle: ".dragHandle",
 };
@@ -29,7 +29,7 @@ const mindmapRootNode = {
 const flowRootNode = {
   id: "flow-root",
   type: "flowmap",
-  data: { label: "Enter Topic to Start (Flow)" },
+  data: { label: "Enter Starting Topic" },
   position: { x: 0, y: 0 },
   dragHandle: ".dragHandle",
 };
