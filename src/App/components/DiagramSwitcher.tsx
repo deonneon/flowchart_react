@@ -55,9 +55,9 @@ const DiagramTypeSwitcher: React.FC<DiagramTypeSwitcherProps> = ({
           Flow Diagram
         </Button>
       </div>
-      <div style={{ color: "gray", textAlign: "right", fontSize: "10px" }}>
+      {/* <div style={{ color: "gray", textAlign: "right", fontSize: "10px" }}>
         EZ Mapper by Danh
-      </div>
+      </div> */}
     </div>
   );
 };
