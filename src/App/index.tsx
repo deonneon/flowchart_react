@@ -60,6 +60,7 @@ function Flow() {
     diagramType,
     selectedNodeId,
     deleteNode,
+    addEdge,
   } = useStore(
     (state) => ({
       nodes: state.nodes,
@@ -72,6 +73,7 @@ function Flow() {
       setSelectedNodeId: state.setSelectedNodeId,
       selectedNodeId: state.selectedNodeId,
       deleteNode: state.deleteNode,
+      addEdge: state.addEdge,
     }),
     shallow
   );
@@ -127,7 +129,7 @@ function Flow() {
 
   const onConnectEnd: OnConnectEnd = useCallback(
     (event: MouseEvent | TouchEvent) => {
-      const { nodeInternals, edges } = store.getState();
+      const { nodeInternals } = store.getState();
       const targetNodeElement = (event.target as Element).closest(
         ".react-flow__node"
       );
@@ -145,16 +147,7 @@ function Flow() {
             edge.source === parentNode.id && edge.target === targetNodeId
         );
         if (!existingConnection) {
-          const newEdge = {
-            id: nanoid(),
-            source: parentNode.id,
-            target: targetNodeId,
-            type: diagramType === "mindmap" ? "mindmap" : "flowmap",
-            style: connectionLineStyle,
-          };
-          store.setState((prevState) => ({
-            edges: [...prevState.edges, newEdge],
-          }));
+          addEdge(parentNode.id, targetNodeId);
         }
       } else if (
         (event.target as Element).classList.contains("react-flow__pane") &&
@@ -164,13 +157,13 @@ function Flow() {
           event as MouseEvent,
           parentNode
         );
-
         if (childNodePosition) {
           addChildNode(parentNode, childNodePosition);
         }
       }
+      connectingNodeId.current = null;
     },
-    [getChildNodePosition, addChildNode]
+    [getChildNodePosition, addChildNode, edges, addEdge]
   );
 
   const addEmptyNode = () => {

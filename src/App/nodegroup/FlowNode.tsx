@@ -65,10 +65,7 @@ function FlowNode({ id, data }: NodeProps<NodeData>) {
           ref={inputRef}
         />
       </div>
-      <Handle type="target" position={Position.Left} isConnectable={true} />
-      <Handle type="target" position={Position.Right} isConnectable={true} />
       <Handle type="target" position={Position.Top} isConnectable={true} />
-      <Handle type="target" position={Position.Bottom} isConnectable={true} />
       <Handle
         type="source"
         position={Position.Top}

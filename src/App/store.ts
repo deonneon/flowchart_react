@@ -50,6 +50,7 @@ export type RFState = {
   setSelectedNodeId: (nodeId: string | null) => void;
   updateBoundingBoxStyle: (nodeId: string, borderStyle: string) => void;
   updateBoundingBoxRadius: (nodeId: string, borderRadius: string) => void;
+  addEdge: (sourceId: string, targetId: string) => void;
 };
 
 const useStore = createWithEqualityFn<RFState>((set, get) => ({
@@ -57,6 +58,23 @@ const useStore = createWithEqualityFn<RFState>((set, get) => ({
   setDiagramType: (type) => {
     const nodes = type === "mindmap" ? [mindmapRootNode] : [flowRootNode];
     set({ diagramType: type, nodes, edges: [] });
+  },
+
+  addEdge: (sourceId: string, targetId: string) => {
+    const newEdge = {
+      id: nanoid(),
+      source: sourceId,
+      target: targetId,
+      type: get().diagramType === "mindmap" ? "mindmap" : "flowmap",
+      style:
+        get().diagramType === "mindmap"
+          ? { stroke: "#F6AD55", strokeWidth: 3 }
+          : { stroke: "#000000", strokeWidth: 2 },
+    };
+
+    set((state) => ({
+      edges: [...state.edges, newEdge],
+    }));
   },
 
   updateBoundingBoxStyle: (nodeId, borderStyle: string) => {
@@ -150,7 +168,7 @@ const useStore = createWithEqualityFn<RFState>((set, get) => ({
       type: get().diagramType === "mindmap" ? "mindmap" : "flowmap",
       data: {
         label: "New Node",
-        sourcePosition: Position.Left,
+        sourcePosition: Position.Bottom,
       },
       position,
       dragHandle: ".dragHandle",
