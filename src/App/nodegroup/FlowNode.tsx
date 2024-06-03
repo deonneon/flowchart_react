@@ -30,6 +30,21 @@ function FlowNode({ id, data }: NodeProps<NodeData>) {
     }
   }, [data.label.length]);
 
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Enter" && inputRef.current) {
+        inputRef.current.blur();
+      }
+    };
+
+    const inputElement = inputRef.current;
+    inputElement?.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      inputElement?.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
+
   return (
     <div
       onMouseEnter={() => setIsHovered(true)}
