@@ -64,7 +64,7 @@ function FlowNode({ id, data }: NodeProps<NodeData>) {
           ref={inputRef}
         />
       </div>
-      <Handle type="target" position={Position.Top} />
+      <Handle type="target" position={Position.Left} />
       <Handle
         type="source"
         position={Position.Top}

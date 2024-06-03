@@ -20,28 +20,28 @@ function MindMapEdge(props: EdgeProps) {
       case "smooth":
         return getSmoothStepPath({
           sourceX,
-          sourceY: sourceY + 18,
+          sourceY,
           targetX,
           targetY,
         })[0];
       case "straight":
         return getStraightPath({
           sourceX,
-          sourceY: sourceY + 18,
+          sourceY: sourceY + 5,
           targetX,
           targetY,
         })[0];
       case "bezier":
         return getSimpleBezierPath({
           sourceX,
-          sourceY: sourceY + 18,
+          sourceY,
           targetX,
           targetY,
         })[0];
       default:
         return getStraightPath({
           sourceX,
-          sourceY,
+          sourceY: sourceY + 5,
           targetX,
           targetY,
         })[0];
