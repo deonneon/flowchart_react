@@ -43,6 +43,7 @@ const nodeTypes = {
 
 const edgeTypes = {
   mindmap: MindMapEdge,
+  flowmap: MindMapEdge,
 };
 
 const nodeOrigin: NodeOrigin = [0.5, 0.5];
@@ -126,28 +127,50 @@ function Flow() {
 
   const onConnectEnd: OnConnectEnd = useCallback(
     (event: MouseEvent | TouchEvent) => {
-      // Accept both MouseEvent and TouchEvent
-      const { nodeInternals } = store.getState();
-      const targetIsPane = (event.target as Element).classList.contains(
-        "react-flow__pane"
+      const { nodeInternals, edges } = store.getState();
+      const targetNodeElement = (event.target as Element).closest(
+        ".react-flow__node"
       );
-      const node = (event.target as Element).closest(".react-flow__node");
+      const targetNodeId = targetNodeElement
+        ? targetNodeElement.getAttribute("data-id")
+        : null;
+      const parentNode = connectingNodeId.current
+        ? nodeInternals.get(connectingNodeId.current)
+        : null;
 
-      if (node) {
-        node.querySelector("input")?.focus({ preventScroll: true });
-      } else if (targetIsPane && connectingNodeId.current) {
-        const parentNode = nodeInternals.get(connectingNodeId.current);
+      if (parentNode && targetNodeId) {
+        // Check if this connection is already present to avoid duplicates
+        const existingConnection = edges.find(
+          (edge) =>
+            edge.source === parentNode.id && edge.target === targetNodeId
+        );
+        if (!existingConnection) {
+          const newEdge = {
+            id: nanoid(),
+            source: parentNode.id,
+            target: targetNodeId,
+            type: diagramType === "mindmap" ? "mindmap" : "flowmap",
+            style: connectionLineStyle,
+          };
+          store.setState((prevState) => ({
+            edges: [...prevState.edges, newEdge],
+          }));
+        }
+      } else if (
+        (event.target as Element).classList.contains("react-flow__pane") &&
+        parentNode
+      ) {
         const childNodePosition = getChildNodePosition(
           event as MouseEvent,
           parentNode
-        ); // Cast event as MouseEvent
+        );
 
-        if (parentNode && childNodePosition) {
+        if (childNodePosition) {
           addChildNode(parentNode, childNodePosition);
         }
       }
     },
-    [getChildNodePosition]
+    [getChildNodePosition, addChildNode]
   );
 
   const addEmptyNode = () => {
