@@ -239,8 +239,17 @@ function Flow() {
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
+      const isCopy = (event.ctrlKey || event.metaKey) && event.key === "c";
+      const isPaste = (event.ctrlKey || event.metaKey) && event.key === "v";
+
       if (event.key === "Delete" && selectedNodeId) {
         deleteNode(selectedNodeId);
+      } else if (isCopy && selectedNodeId) {
+        event.preventDefault();
+        useStore.setState({ copiedNodeId: selectedNodeId });
+      } else if (isPaste) {
+        event.preventDefault();
+        useStore.getState().cloneNode();
       }
     };
 
@@ -285,8 +294,13 @@ function Flow() {
         <Controls />
         <Panel position="top-left" className="header">
           <ToastContainer
-            position="bottom-right"
-            style={{ marginBottom: "20vh", width: "13%", fontSize: "0.7rem" }}
+            position="top-right"
+            style={{
+              marginTop: "40px",
+              width: "13%",
+              fontSize: "0.7rem",
+              zIndex: 1000,
+            }}
             autoClose={2000}
             hideProgressBar={true}
             newestOnTop={true}

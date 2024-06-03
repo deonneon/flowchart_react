@@ -51,6 +51,8 @@ export type RFState = {
   updateBoundingBoxStyle: (nodeId: string, borderStyle: string) => void;
   updateBoundingBoxRadius: (nodeId: string, borderRadius: string) => void;
   addEdge: (sourceId: string, targetId: string) => void;
+  cloneNode: () => void;
+  copiedNodeId: string | null;
 };
 
 const useStore = createWithEqualityFn<RFState>((set, get) => ({
@@ -196,6 +198,41 @@ const useStore = createWithEqualityFn<RFState>((set, get) => ({
         return node;
       }),
     });
+  },
+  copiedNodeId: null,
+  cloneNode: () => {
+    const { copiedNodeId, nodes, edges, diagramType } = get();
+    const nodeToClone = nodes.find((node) => node.id === copiedNodeId);
+    if (nodeToClone) {
+      const newNode = {
+        ...nodeToClone,
+        id: nanoid(),
+        position: {
+          x: nodeToClone.position.x + 50,
+          y: nodeToClone.position.y + 50,
+        },
+      };
+
+      const newEdges = edges
+        .filter(
+          (edge) => edge.source === copiedNodeId || edge.target === copiedNodeId
+        )
+        .map((edge) => ({
+          ...edge,
+          id: nanoid(),
+          source: edge.source === copiedNodeId ? newNode.id : edge.source,
+          target: edge.target === copiedNodeId ? newNode.id : edge.target,
+        }));
+
+      set({
+        nodes: [...nodes, newNode],
+        edges: [...edges, ...newEdges],
+        selectedNodeId: newNode.id,
+      });
+      toast("Node cloned!");
+    } else {
+      toast.error("No node selected to clone!");
+    }
   },
 }));
 
