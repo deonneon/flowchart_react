@@ -1,4 +1,4 @@
-import { useCallback, useRef } from "react";
+import { useCallback, useRef, useEffect } from "react";
 import ReactFlow, {
   NodeOrigin,
   Node,
@@ -31,22 +31,22 @@ import "reactflow/dist/style.css";
 import DownloadButton from "./components/DownloadButton";
 import DiagramTypeSwitcher from "./components/DiagramSwitcher";
 import BottomToolbar from "./components/BottomToolbar";
+import FlowNode from "./nodegroup/FlowNode";
 
 const nodeTypes = {
   mindmap: MindMapNode,
   textbox: TextBoxNode,
   boundingbox: BoundingBoxNode,
   database: DatabaseNode,
+  flowmap: FlowNode,
 };
 
 const edgeTypes = {
   mindmap: MindMapEdge,
+  flowmap: MindMapEdge,
 };
 
 const nodeOrigin: NodeOrigin = [0.5, 0.5];
-
-const connectionLineStyle = { stroke: "#F6AD55", strokeWidth: 3 };
-const defaultEdgeOptions = { style: connectionLineStyle, type: "mindmap" };
 
 function Flow() {
   const store = useStoreApi();
@@ -58,6 +58,9 @@ function Flow() {
     addChildNode,
     setSelectedNodeId,
     diagramType,
+    selectedNodeId,
+    deleteNode,
+    addEdge,
   } = useStore(
     (state) => ({
       nodes: state.nodes,
@@ -68,11 +71,28 @@ function Flow() {
       diagramType: state.diagramType,
       setDiagramType: state.setDiagramType,
       setSelectedNodeId: state.setSelectedNodeId,
+      selectedNodeId: state.selectedNodeId,
+      deleteNode: state.deleteNode,
+      addEdge: state.addEdge,
     }),
     shallow
   );
   const { project, setCenter } = useReactFlow();
   const connectingNodeId = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (diagramType === "mindmap") {
+      setSelectedNodeId("mindmap-root");
+    } else if (diagramType === "flow") {
+      setSelectedNodeId("flow-root");
+    }
+  }, [diagramType, setSelectedNodeId]);
+
+  const connectionLineStyle = {
+    stroke: diagramType === "mindmap" ? "#F6AD55" : "#000000",
+    strokeWidth: diagramType === "mindmap" ? 3 : 2,
+  };
+  const defaultEdgeOptions = { style: connectionLineStyle, type: "mindmap" };
 
   const getChildNodePosition = (event: MouseEvent, parentNode?: Node) => {
     const { domNode } = store.getState();
@@ -109,35 +129,48 @@ function Flow() {
 
   const onConnectEnd: OnConnectEnd = useCallback(
     (event: MouseEvent | TouchEvent) => {
-      // Accept both MouseEvent and TouchEvent
       const { nodeInternals } = store.getState();
-      const targetIsPane = (event.target as Element).classList.contains(
-        "react-flow__pane"
+      const targetNodeElement = (event.target as Element).closest(
+        ".react-flow__node"
       );
-      const node = (event.target as Element).closest(".react-flow__node");
+      const targetNodeId = targetNodeElement
+        ? targetNodeElement.getAttribute("data-id")
+        : null;
+      const parentNode = connectingNodeId.current
+        ? nodeInternals.get(connectingNodeId.current)
+        : null;
 
-      if (node) {
-        node.querySelector("input")?.focus({ preventScroll: true });
-      } else if (targetIsPane && connectingNodeId.current) {
-        const parentNode = nodeInternals.get(connectingNodeId.current);
+      if (parentNode && targetNodeId) {
+        // Check if this connection is already present to avoid duplicates
+        const existingConnection = edges.find(
+          (edge) =>
+            edge.source === parentNode.id && edge.target === targetNodeId
+        );
+        if (!existingConnection) {
+          addEdge(parentNode.id, targetNodeId);
+        }
+      } else if (
+        (event.target as Element).classList.contains("react-flow__pane") &&
+        parentNode
+      ) {
         const childNodePosition = getChildNodePosition(
           event as MouseEvent,
           parentNode
-        ); // Cast event as MouseEvent
-
-        if (parentNode && childNodePosition) {
+        );
+        if (childNodePosition) {
           addChildNode(parentNode, childNodePosition);
         }
       }
+      connectingNodeId.current = null;
     },
-    [getChildNodePosition]
+    [getChildNodePosition, addChildNode, edges, addEdge]
   );
 
   const addEmptyNode = () => {
     const position = { x: Math.random() * 200, y: Math.random() * 150 };
     const newNode = {
       id: nanoid(), // Generates a unique ID
-      type: "mindmap", // Assuming 'mindmap' is the type you use for new nodes
+      type: diagramType === "mindmap" ? "mindmap" : "flowmap",
       data: { label: "New Node" },
       position,
       dragHandle: ".dragHandle",
@@ -204,15 +237,28 @@ function Flow() {
     toast("Added new bounding box!");
   };
 
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Delete" && selectedNodeId) {
+        deleteNode(selectedNodeId);
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [deleteNode, selectedNodeId]);
+
   return (
     <>
       <svg style={{ width: 0, height: 0, position: "absolute" }}>
         <defs>
           <marker
             id="arrow"
-            markerWidth="10"
+            markerWidth="5"
             markerHeight="20"
-            refX="20" // Adjust this to control the point where the arrow points meet the target node
+            refX="4" // Adjust this to control the point where the arrow points meet the target node
             refY="3"
             orient="auto"
             markerUnits="strokeWidth"

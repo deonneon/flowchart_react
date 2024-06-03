@@ -20,11 +20,6 @@ const DiagramTypeSwitcher: React.FC<DiagramTypeSwitcherProps> = ({
   const handleSetDiagramType = (type: DiagramType) => {
     setDiagramType(type);
     setActiveType(type);
-    if (type === "flow") {
-      const firstNode = nodes[0];
-      setCenter(firstNode.position.x + 200, firstNode.position.y);
-    }
-    if (type === "mindmap") setCenter(0, 0);
   };
 
   return (

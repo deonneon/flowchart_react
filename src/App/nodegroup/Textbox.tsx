@@ -20,6 +20,7 @@ const TextBoxNode = ({ id, data }: NodeProps<NodeData>) => {
   useEffect(() => {
     setTimeout(() => {
       inputRef.current?.focus({ preventScroll: true });
+      inputRef.current?.select();
     }, 1);
   }, []);
 
@@ -70,8 +71,9 @@ const TextBoxNode = ({ id, data }: NodeProps<NodeData>) => {
         className="textbox-node"
         type="source"
         position={Position.Right}
+        isConnectable={true}
       />
-      <Handle type="target" position={Position.Left} />
+      <Handle type="target" position={Position.Left} isConnectable={true} />
     </div>
   );
 };

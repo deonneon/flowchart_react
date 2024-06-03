@@ -18,6 +18,22 @@ import { NodeData } from "./MindMapNode";
 
 export type DiagramType = "mindmap" | "flow";
 
+const mindmapRootNode = {
+  id: "mindmap-root",
+  type: "mindmap",
+  data: { label: "Enter Topic to Start" },
+  position: { x: 0, y: 0 },
+  dragHandle: ".dragHandle",
+};
+
+const flowRootNode = {
+  id: "flow-root",
+  type: "flowmap",
+  data: { label: "Enter Starting Topic" },
+  position: { x: 0, y: 0 },
+  dragHandle: ".dragHandle",
+};
+
 export type RFState = {
   nodes: Node<NodeData>[];
   edges: Edge[];
@@ -32,11 +48,56 @@ export type RFState = {
   updateNodeColor: (nodeId: string, color: string) => void;
   selectedNodeId: string | null;
   setSelectedNodeId: (nodeId: string | null) => void;
+  updateBoundingBoxStyle: (nodeId: string, borderStyle: string) => void;
+  updateBoundingBoxRadius: (nodeId: string, borderRadius: string) => void;
+  addEdge: (sourceId: string, targetId: string) => void;
 };
 
 const useStore = createWithEqualityFn<RFState>((set, get) => ({
-  diagramType: "mindmap",
-  setDiagramType: (type) => set({ diagramType: type }),
+  diagramType: "flow",
+  setDiagramType: (type) => {
+    const nodes = type === "mindmap" ? [mindmapRootNode] : [flowRootNode];
+    set({ diagramType: type, nodes, edges: [] });
+  },
+
+  addEdge: (sourceId: string, targetId: string) => {
+    const newEdge = {
+      id: nanoid(),
+      source: sourceId,
+      target: targetId,
+      type: get().diagramType === "mindmap" ? "mindmap" : "flowmap",
+      style:
+        get().diagramType === "mindmap"
+          ? { stroke: "#F6AD55", strokeWidth: 3 }
+          : { stroke: "#000000", strokeWidth: 2 },
+    };
+
+    set((state) => ({
+      edges: [...state.edges, newEdge],
+    }));
+  },
+
+  updateBoundingBoxStyle: (nodeId, borderStyle: string) => {
+    set({
+      nodes: get().nodes.map((node) => {
+        if (node.id === nodeId && node.type === "boundingbox") {
+          node.style = { ...node.style, border: borderStyle };
+        }
+        return node;
+      }),
+    });
+  },
+  updateBoundingBoxRadius: (nodeId: string, borderRadius: string) => {
+    set({
+      nodes: get().nodes.map((node) => {
+        if (node.id === nodeId && node.type === "boundingbox") {
+          node.style = { ...node.style, borderRadius };
+        }
+        return node;
+      }),
+    });
+  },
+
   deleteNode: (id) => {
     set((state) => {
       const nodeToDelete = state.nodes.find((node) => node.id === id);
@@ -74,17 +135,9 @@ const useStore = createWithEqualityFn<RFState>((set, get) => ({
       };
     });
   },
-  selectedNodeId: "root",
+  selectedNodeId: "flow-root",
   setSelectedNodeId: (nodeId) => set({ selectedNodeId: nodeId }),
-  nodes: [
-    {
-      id: "root",
-      type: "mindmap",
-      data: { label: "Enter Topic to Start" },
-      position: { x: 0, y: 0 },
-      dragHandle: ".dragHandle",
-    },
-  ],
+  nodes: [flowRootNode],
   edges: [],
   edgePathType: "straight",
   onNodesChange: (changes: NodeChange[]) => {
@@ -112,10 +165,10 @@ const useStore = createWithEqualityFn<RFState>((set, get) => ({
   addChildNode: (parentNode: Node, position: XYPosition) => {
     const newNode = {
       id: nanoid(),
-      type: "mindmap",
+      type: get().diagramType === "mindmap" ? "mindmap" : "flowmap",
       data: {
         label: "New Node",
-        sourcePosition: Position.Left,
+        sourcePosition: Position.Bottom,
       },
       position,
       dragHandle: ".dragHandle",

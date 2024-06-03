@@ -25,6 +25,14 @@ body,
   font-weight: 700;
 }
 
+.react-flow__node-flowmap {
+  background: white;
+  border-radius: 2px;
+  border: none;
+  padding: 6px 10px;
+  font-weight: 700;
+}
+
 .react-flow__handle.target {
   top: 50%;
   pointer-events: none;

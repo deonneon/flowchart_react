@@ -9,7 +9,7 @@ export type NodeData = {
   color?: string;
 };
 
-function DatabaseNode({ id, data }: NodeProps<NodeData>) {
+function FlowNode({ id, data }: NodeProps<NodeData>) {
   const inputRef = useRef<HTMLInputElement>(null);
   const updateNodeLabel = useStore((state) => state.updateNodeLabel);
   const deleteNode = useStore((state) => state.deleteNode);
@@ -35,11 +35,28 @@ function DatabaseNode({ id, data }: NodeProps<NodeData>) {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onClick={() => setSelectedNodeId(id)}
-      style={{ backgroundColor: "transparent" }}
+      style={{ backgroundColor: data.color }}
     >
       <div className="inputWrapper">
         <div className="dragHandle">
           <DragIcon />
+          {isHovered && (
+            <div>
+              <button
+                style={{
+                  position: "absolute",
+                  borderRadius: "50%",
+                  backgroundColor: "pink",
+                  border: "0px",
+                  right: -17,
+                  bottom: -15,
+                }}
+                onClick={() => deleteNode(id)}
+              >
+                -
+              </button>
+            </div>
+          )}
         </div>
         <input
           value={data.label}
@@ -48,49 +65,33 @@ function DatabaseNode({ id, data }: NodeProps<NodeData>) {
           ref={inputRef}
         />
       </div>
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        xmlnsXlink="http://www.w3.org/1999/xlink"
-        viewBox="0 0 100 120"
-        className="database-shape"
-      >
-        <path
-          d="
-             M2,50
-             A50,10 0 0,0 98,50
-             A50,10 0 0,0 2,50
-             L2,100 
-             A50,10,0 0,0 98,100
-             L98,50             
-             " //change 125 for height variantions
-          style={{ stroke: "black", backgroundColor: "transparent" }}
-        />
-      </svg>
-      <Handle type="target" position={Position.Bottom} />
+      <Handle type="target" position={Position.Top} isConnectable={true} />
+      <Handle
+        type="source"
+        position={Position.Top}
+        style={{ backgroundColor: data.color }}
+        isConnectable={true}
+      />
+      <Handle
+        type="source"
+        position={Position.Bottom}
+        style={{ backgroundColor: data.color }}
+        isConnectable={true}
+      />
+      <Handle
+        type="source"
+        position={Position.Left}
+        style={{ backgroundColor: data.color }}
+        isConnectable={true}
+      />
       <Handle
         type="source"
         position={Position.Right}
-        style={{ backgroundColor: "transparent" }}
+        style={{ backgroundColor: data.color }}
+        isConnectable={true}
       />
-      {isHovered && (
-        <div>
-          <button
-            style={{
-              position: "absolute",
-              borderRadius: "50%",
-              backgroundColor: "pink",
-              border: "0px",
-              right: 0,
-              bottom: 0,
-            }}
-            onClick={() => deleteNode(id)}
-          >
-            -
-          </button>
-        </div>
-      )}
     </div>
   );
 }
 
-export default DatabaseNode;
+export default FlowNode;
