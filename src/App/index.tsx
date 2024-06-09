@@ -32,6 +32,7 @@ import DownloadButton from "./components/DownloadButton";
 import DiagramTypeSwitcher from "./components/DiagramSwitcher";
 import BottomToolbar from "./components/BottomToolbar";
 import FlowNode from "./nodegroup/FlowNode";
+import PeopleNode from "./nodegroup/PeopleNode";
 
 const nodeTypes = {
   mindmap: MindMapNode,
@@ -39,6 +40,7 @@ const nodeTypes = {
   boundingbox: BoundingBoxNode,
   database: DatabaseNode,
   flowmap: FlowNode,
+  people: PeopleNode,
 };
 
 const edgeTypes = {
@@ -259,6 +261,23 @@ function Flow() {
     };
   }, [deleteNode, selectedNodeId]);
 
+  const addPeopleNode = () => {
+    const position = { x: Math.random() * 200, y: Math.random() * 150 };
+    const newNode = {
+      id: nanoid(), // Generates a unique ID
+      type: "people",
+      data: { label: "Person" },
+      position,
+      dragHandle: ".dragHandle",
+    };
+
+    useStore.setState((prevState) => ({
+      nodes: [...prevState.nodes, newNode],
+    }));
+    setSelectedNodeId(newNode.id);
+    toast("Added new person node!");
+  };
+
   return (
     <>
       <svg style={{ width: 0, height: 0, position: "absolute" }}>
@@ -344,6 +363,14 @@ function Flow() {
                 title="Add Database Node"
               >
                 Add Database
+              </Button>
+              <Button
+                style={{ marginLeft: "5px" }}
+                variant="contained"
+                onClick={addPeopleNode}
+                title="Add People Node"
+              >
+                Add Person
               </Button>
             </>
           )}
