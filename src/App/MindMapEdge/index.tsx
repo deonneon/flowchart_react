@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 import {
   BaseEdge,
   EdgeProps,
@@ -10,11 +10,14 @@ import useStore from "../store";
 
 function MindMapEdge(props: EdgeProps) {
   const { id, sourceX, sourceY, targetX, targetY } = props;
-  const { edgePathType, diagramType, deleteEdge } = useStore((state) => ({
-    edgePathType: state.edgePathType,
-    diagramType: state.diagramType,
-    deleteEdge: state.deleteEdge,
-  }));
+  const { edgePathType, diagramType, toggleEdgeStyle, deleteEdge } = useStore(
+    (state) => ({
+      edgePathType: state.edgePathType,
+      diagramType: state.diagramType,
+      toggleEdgeStyle: state.toggleEdgeStyle,
+      deleteEdge: state.deleteEdge,
+    })
+  );
 
   const getEdgePath = () => {
     switch (edgePathType) {
@@ -50,8 +53,24 @@ function MindMapEdge(props: EdgeProps) {
   };
 
   const handleEdgeClick = useCallback(() => {
-    deleteEdge(id);
-  }, [deleteEdge, id]);
+    toggleEdgeStyle(id);
+  }, [toggleEdgeStyle, id]);
+
+  const handleKeyPress = useCallback(
+    (event: any) => {
+      if (event.key === "Delete") {
+        deleteEdge(id);
+      }
+    },
+    [deleteEdge, id]
+  );
+
+  useEffect(() => {
+    window.addEventListener("keydown", handleKeyPress);
+    return () => {
+      window.removeEventListener("keydown", handleKeyPress);
+    };
+  }, [handleKeyPress]);
 
   const edgePath = getEdgePath();
   const markerEnd = diagramType === "flow" ? "url(#arrow)" : undefined;

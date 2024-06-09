@@ -54,6 +54,7 @@ export type RFState = {
   cloneNode: () => void;
   copiedNodeId: string | null;
   deleteEdge: (id: string) => void;
+  toggleEdgeStyle: (id: string) => void;
 };
 
 const useStore = createWithEqualityFn<RFState>((set, get) => ({
@@ -242,6 +243,19 @@ const useStore = createWithEqualityFn<RFState>((set, get) => ({
     set((state) => ({
       edges: state.edges.filter((edge) => edge.id !== id),
     }));
+  },
+
+  toggleEdgeStyle: (id: string) => {
+    set({
+      edges: get().edges.map((edge) => {
+        if (edge.id === id) {
+          edge.style = edge.style?.strokeDasharray
+            ? { ...edge.style, strokeDasharray: undefined }
+            : { ...edge.style, strokeDasharray: "5,5" };
+        }
+        return edge;
+      }),
+    });
   },
 }));
 
