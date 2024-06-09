@@ -53,6 +53,7 @@ export type RFState = {
   addEdge: (sourceId: string, targetId: string) => void;
   cloneNode: () => void;
   copiedNodeId: string | null;
+  deleteEdge: (id: string) => void;
 };
 
 const useStore = createWithEqualityFn<RFState>((set, get) => ({
@@ -235,6 +236,12 @@ const useStore = createWithEqualityFn<RFState>((set, get) => ({
     } else {
       toast.error("No node selected to clone!");
     }
+  },
+
+  deleteEdge: (id: string) => {
+    set((state) => ({
+      edges: state.edges.filter((edge) => edge.id !== id),
+    }));
   },
 }));
 

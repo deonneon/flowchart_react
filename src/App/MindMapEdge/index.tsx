@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import {
   BaseEdge,
   EdgeProps,
@@ -9,10 +9,11 @@ import {
 import useStore from "../store";
 
 function MindMapEdge(props: EdgeProps) {
-  const { sourceX, sourceY, targetX, targetY } = props;
-  const { edgePathType, diagramType } = useStore((state) => ({
+  const { id, sourceX, sourceY, targetX, targetY } = props;
+  const { edgePathType, diagramType, deleteEdge } = useStore((state) => ({
     edgePathType: state.edgePathType,
     diagramType: state.diagramType,
+    deleteEdge: state.deleteEdge,
   }));
 
   const getEdgePath = () => {
@@ -48,11 +49,18 @@ function MindMapEdge(props: EdgeProps) {
     }
   };
 
-  const markerEnd = diagramType === "flow" ? "url(#arrow)" : undefined;
+  const handleEdgeClick = useCallback(() => {
+    deleteEdge(id);
+  }, [deleteEdge, id]);
 
   const edgePath = getEdgePath();
+  const markerEnd = diagramType === "flow" ? "url(#arrow)" : undefined;
 
-  return <BaseEdge path={edgePath} {...props} markerEnd={markerEnd} />;
+  return (
+    <g onClick={handleEdgeClick}>
+      <BaseEdge path={edgePath} markerEnd={markerEnd} {...props} />
+    </g>
+  );
 }
 
 export default MindMapEdge;
