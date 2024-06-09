@@ -77,8 +77,8 @@ function DatabaseNode({ id, data }: NodeProps<NodeData>) {
              L2,100 
              A50,10,0 0,0 98,100
              L98,50             
-             " //change 125 for height variantions
-          style={{ stroke: "black", backgroundColor: "transparent" }}
+             " //change 125 for height variations
+          style={{ stroke: "black", fill: data.color || "salmon" }}
         />
       </svg>
       <Handle type="target" position={Position.Bottom} />
