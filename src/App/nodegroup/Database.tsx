@@ -50,7 +50,9 @@ function DatabaseNode({ id, data }: NodeProps<NodeData>) {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onClick={() => setSelectedNodeId(id)}
-      style={{ backgroundColor: "transparent" }}
+      style={{
+        backgroundColor: "transparent",
+      }}
     >
       <div className="inputWrapper">
         <div className="dragHandle">
@@ -66,18 +68,18 @@ function DatabaseNode({ id, data }: NodeProps<NodeData>) {
       <svg
         xmlns="http://www.w3.org/2000/svg"
         xmlnsXlink="http://www.w3.org/1999/xlink"
-        viewBox="0 0 100 120"
+        viewBox="0 0 100 100"
         className="database-shape"
       >
         <path
           d="
-             M2,50
-             A50,10 0 0,0 98,50
-             A50,10 0 0,0 2,50
-             L2,100 
-             A50,10,0 0,0 98,100
-             L98,50             
-             " //change 125 for height variations
+            M2,20
+            A50,10 0 0,0 98,20
+            A50,10 0 0,0 2,20
+            L2,60 
+            A50,10,0 0,0 98,60
+            L98,20             
+          "
           style={{ stroke: "black", fill: data.color || "salmon" }}
         />
       </svg>
