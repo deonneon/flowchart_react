@@ -205,12 +205,14 @@ const useStore = createWithEqualityFn<RFState>((set, get) => ({
     const nodeToClone = nodes.find((node) => node.id === copiedNodeId);
     if (nodeToClone) {
       const newNode = {
-        ...nodeToClone,
         id: nanoid(),
+        type: nodeToClone.type,
+        data: { label: `Clone of ${nodeToClone.data.label}` }, // Create a new data object
         position: {
           x: nodeToClone.position.x + 50,
           y: nodeToClone.position.y + 50,
         },
+        dragHandle: ".dragHandle",
       };
 
       const newEdges = edges
