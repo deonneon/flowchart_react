@@ -47,7 +47,6 @@ const PeopleNode = ({ id, data }: NodeProps<NodeData>) => {
       onMouseLeave={() => setIsHovered(false)}
       onClick={() => setSelectedNodeId(id)}
       style={{
-        backgroundColor: data.color,
         padding: "10px",
         borderRadius: "5px",
         display: "flex",
@@ -98,7 +97,7 @@ const PeopleNode = ({ id, data }: NodeProps<NodeData>) => {
           borderRadius: "5px",
         }}
       >
-        <BoyIcon fontSize="large" />
+        <BoyIcon fontSize="large" sx={{ color: data.color || "black" }} />
       </div>
       <Handle type="target" position={Position.Top} isConnectable={true} />
       <Handle
