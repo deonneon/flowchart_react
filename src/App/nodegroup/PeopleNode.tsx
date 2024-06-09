@@ -54,26 +54,17 @@ const PeopleNode = ({ id, data }: NodeProps<NodeData>) => {
         alignItems: "center",
       }}
     >
-      <div className="inputWrapper">
+      <div
+        className="inputWrapper"
+        style={{
+          borderRadius: "5px",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
+      >
         <div className="dragHandle">
           <DragIcon />
-          {isHovered && (
-            <div>
-              <button
-                style={{
-                  position: "absolute",
-                  borderRadius: "50%",
-                  backgroundColor: "pink",
-                  border: "0px",
-                  right: -17,
-                  bottom: -15,
-                }}
-                onClick={() => deleteNode(id)}
-              >
-                -
-              </button>
-            </div>
-          )}
         </div>
         <input
           value={data.label}
