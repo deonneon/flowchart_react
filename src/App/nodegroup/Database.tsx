@@ -83,11 +83,53 @@ function DatabaseNode({ id, data }: NodeProps<NodeData>) {
           style={{ stroke: "black", fill: data.color || "salmon" }}
         />
       </svg>
-      <Handle type="target" position={Position.Bottom} />
+      <Handle
+        type="target"
+        position={Position.Top}
+        isConnectable={true}
+        id="top"
+      />
+      <Handle
+        type="target"
+        position={Position.Bottom}
+        isConnectable={true}
+        id="bottom"
+      />
+      <Handle
+        type="target"
+        position={Position.Left}
+        isConnectable={true}
+        id="left"
+      />
+      <Handle
+        type="target"
+        position={Position.Right}
+        isConnectable={true}
+        id="right"
+      />
+      <Handle
+        type="source"
+        position={Position.Top}
+        style={{ backgroundColor: "transparent" }}
+        isConnectable={true}
+      />
+      <Handle
+        type="source"
+        position={Position.Bottom}
+        style={{ backgroundColor: "transparent" }}
+        isConnectable={true}
+      />
+      <Handle
+        type="source"
+        position={Position.Left}
+        style={{ backgroundColor: "transparent" }}
+        isConnectable={true}
+      />
       <Handle
         type="source"
         position={Position.Right}
         style={{ backgroundColor: "transparent" }}
+        isConnectable={true}
       />
       {isHovered && (
         <div>

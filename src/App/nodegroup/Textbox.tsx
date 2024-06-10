@@ -82,13 +82,63 @@ const TextBoxNode = ({ id, data }: NodeProps<NodeData>) => {
           ref={inputRef}
         />
       </div>
+
       <Handle
-        className="textbox-node"
-        type="source"
+        type="target"
+        position={Position.Top}
+        isConnectable={true}
+        id="top"
+      />
+      <Handle
+        type="target"
+        position={Position.Bottom}
+        isConnectable={true}
+        id="bottom"
+      />
+      <Handle
+        type="target"
+        position={Position.Left}
+        isConnectable={true}
+        id="left"
+      />
+      <Handle
+        type="target"
         position={Position.Right}
         isConnectable={true}
+        id="right"
       />
-      <Handle type="target" position={Position.Left} isConnectable={true} />
+      <Handle
+        type="source"
+        position={Position.Top}
+        className="textbox-node"
+        style={{ backgroundColor: data.color }}
+        isConnectable={true}
+        id="top"
+      />
+      <Handle
+        type="source"
+        position={Position.Bottom}
+        className="textbox-node"
+        style={{ backgroundColor: data.color }}
+        isConnectable={true}
+        id="bottom"
+      />
+      <Handle
+        type="source"
+        position={Position.Left}
+        className="textbox-node"
+        style={{ backgroundColor: data.color }}
+        isConnectable={true}
+        id="left"
+      />
+      <Handle
+        type="source"
+        position={Position.Right}
+        className="textbox-node"
+        style={{ backgroundColor: data.color }}
+        isConnectable={true}
+        id="right"
+      />
     </div>
   );
 };
