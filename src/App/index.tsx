@@ -33,6 +33,7 @@ import DiagramTypeSwitcher from "./components/DiagramSwitcher";
 import BottomToolbar from "./components/BottomToolbar";
 import FlowNode from "./nodegroup/FlowNode";
 import PeopleNode from "./nodegroup/PeopleNode";
+import SimpleFloatingEdge from "./edgegroup/FloatingEdge";
 
 const nodeTypes = {
   mindmap: MindMapNode,
@@ -45,7 +46,7 @@ const nodeTypes = {
 
 const edgeTypes = {
   mindmap: MindMapEdge,
-  flowmap: MindMapEdge,
+  flowmap: SimpleFloatingEdge,
 };
 
 const nodeOrigin: NodeOrigin = [0.5, 0.5];
@@ -94,7 +95,10 @@ function Flow() {
     stroke: diagramType === "mindmap" ? "#F6AD55" : "#000000",
     strokeWidth: diagramType === "mindmap" ? 3 : 2,
   };
-  const defaultEdgeOptions = { style: connectionLineStyle, type: "mindmap" };
+  const defaultEdgeOptions = {
+    style: connectionLineStyle,
+    type: diagramType === "mindmap" ? "mindmap" : "flowmap",
+  };
 
   const getChildNodePosition = (event: MouseEvent, parentNode?: Node) => {
     const { domNode } = store.getState();

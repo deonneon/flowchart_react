@@ -1,4 +1,4 @@
-import { useLayoutEffect, useEffect, useRef, useState } from "react";
+import { useLayoutEffect, useEffect, useRef, useState, memo } from "react";
 import { Handle, NodeProps, Position } from "reactflow";
 import useStore from "../store";
 import DragIcon from "./DragIcon";
@@ -137,4 +137,4 @@ function FlowNode({ id, data }: NodeProps<NodeData>) {
   );
 }
 
-export default FlowNode;
+export default memo(FlowNode);
