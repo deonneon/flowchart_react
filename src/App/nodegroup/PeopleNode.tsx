@@ -1,7 +1,9 @@
-import { useLayoutEffect, useEffect, useRef, useState, memo } from "react";
+// File: ./src/App/nodegroup/PeopleNode.tsx
+import { useEffect, useRef, useState } from "react";
 import { Handle, NodeProps, Position } from "reactflow";
 import useStore from "../store";
 import DragIcon from "./DragIcon";
+import BoyIcon from "@mui/icons-material/Boy";
 
 export type NodeData = {
   label: string;
@@ -9,7 +11,7 @@ export type NodeData = {
   color?: string;
 };
 
-function FlowNode({ id, data }: NodeProps<NodeData>) {
+const PeopleNode = ({ id, data }: NodeProps<NodeData>) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const updateNodeLabel = useStore((state) => state.updateNodeLabel);
   const deleteNode = useStore((state) => state.deleteNode);
@@ -23,12 +25,6 @@ function FlowNode({ id, data }: NodeProps<NodeData>) {
       inputRef.current?.select();
     }, 1);
   }, []);
-
-  useLayoutEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.style.width = `${data.label.length * 8}px`;
-    }
-  }, [data.label.length]);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -50,91 +46,77 @@ function FlowNode({ id, data }: NodeProps<NodeData>) {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onClick={() => setSelectedNodeId(id)}
-      style={{ backgroundColor: data.color }}
+      style={{
+        padding: "10px",
+        borderRadius: "5px",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+      }}
     >
-      <div className="inputWrapper">
+      <div
+        className="inputWrapper"
+        style={{
+          borderRadius: "5px",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
+      >
         <div className="dragHandle">
           <DragIcon />
-          {isHovered && (
-            <div>
-              <button
-                style={{
-                  position: "absolute",
-                  borderRadius: "50%",
-                  backgroundColor: "pink",
-                  border: "0px",
-                  right: -17,
-                  bottom: -15,
-                }}
-                onClick={() => deleteNode(id)}
-              >
-                -
-              </button>
-            </div>
-          )}
         </div>
         <input
           value={data.label}
           onChange={(evt) => updateNodeLabel(id, evt.target.value)}
           className="input"
           ref={inputRef}
+          style={{
+            textAlign: "center",
+            marginBottom: "5px",
+            backgroundColor: "transparent",
+            border: "none",
+            fontWeight: "bold",
+            width: "100%",
+          }}
         />
       </div>
-      {/* Add multiple handles for dynamic connection calculation */}
-      <Handle
-        type="target"
-        position={Position.Top}
-        isConnectable={true}
-        id="top"
-      />
-      <Handle
-        type="target"
-        position={Position.Bottom}
-        isConnectable={true}
-        id="bottom"
-      />
-      <Handle
-        type="target"
-        position={Position.Left}
-        isConnectable={true}
-        id="left"
-      />
-      <Handle
-        type="target"
-        position={Position.Right}
-        isConnectable={true}
-        id="right"
-      />
+      <div
+        style={{
+          backgroundColor: "white",
+          padding: "5px",
+          borderRadius: "5px",
+        }}
+      >
+        <BoyIcon fontSize="large" sx={{ color: data.color || "black" }} />
+      </div>
+      <Handle type="target" position={Position.Top} isConnectable={true} />
       <Handle
         type="source"
         position={Position.Top}
-        style={{ backgroundColor: data.color }}
+        style={{ backgroundColor: "transparent" }}
         isConnectable={true}
-        id="top"
       />
       <Handle
         type="source"
         position={Position.Bottom}
-        style={{ backgroundColor: data.color }}
+        style={{ backgroundColor: "transparent" }}
         isConnectable={true}
-        id="bottom"
       />
       <Handle
         type="source"
         position={Position.Left}
-        style={{ backgroundColor: data.color }}
+        style={{ backgroundColor: "transparent" }}
         isConnectable={true}
-        id="left"
       />
       <Handle
         type="source"
         position={Position.Right}
-        style={{ backgroundColor: data.color }}
+        style={{ backgroundColor: "transparent" }}
         isConnectable={true}
-        id="right"
       />
     </div>
   );
-}
+};
 
-export default memo(FlowNode);
+export default PeopleNode;

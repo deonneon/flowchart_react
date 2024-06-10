@@ -53,6 +53,8 @@ export type RFState = {
   addEdge: (sourceId: string, targetId: string) => void;
   cloneNode: () => void;
   copiedNodeId: string | null;
+  deleteEdge: (id: string) => void;
+  toggleEdgeStyle: (id: string) => void;
 };
 
 const useStore = createWithEqualityFn<RFState>((set, get) => ({
@@ -205,12 +207,14 @@ const useStore = createWithEqualityFn<RFState>((set, get) => ({
     const nodeToClone = nodes.find((node) => node.id === copiedNodeId);
     if (nodeToClone) {
       const newNode = {
-        ...nodeToClone,
         id: nanoid(),
+        type: nodeToClone.type,
+        data: { label: `Clone of ${nodeToClone.data.label}` }, // Create a new data object
         position: {
           x: nodeToClone.position.x + 50,
           y: nodeToClone.position.y + 50,
         },
+        dragHandle: ".dragHandle",
       };
 
       const newEdges = edges
@@ -233,6 +237,25 @@ const useStore = createWithEqualityFn<RFState>((set, get) => ({
     } else {
       toast.error("No node selected to clone!");
     }
+  },
+
+  deleteEdge: (id: string) => {
+    set((state) => ({
+      edges: state.edges.filter((edge) => edge.id !== id),
+    }));
+  },
+
+  toggleEdgeStyle: (id: string) => {
+    set({
+      edges: get().edges.map((edge) => {
+        if (edge.id === id) {
+          edge.style = edge.style?.strokeDasharray
+            ? { ...edge.style, strokeDasharray: undefined }
+            : { ...edge.style, strokeDasharray: "5,5" };
+        }
+        return edge;
+      }),
+    });
   },
 }));
 

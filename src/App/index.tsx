@@ -32,6 +32,8 @@ import DownloadButton from "./components/DownloadButton";
 import DiagramTypeSwitcher from "./components/DiagramSwitcher";
 import BottomToolbar from "./components/BottomToolbar";
 import FlowNode from "./nodegroup/FlowNode";
+import PeopleNode from "./nodegroup/PeopleNode";
+import SimpleFloatingEdge from "./edgegroup/FloatingEdge";
 
 const nodeTypes = {
   mindmap: MindMapNode,
@@ -39,11 +41,12 @@ const nodeTypes = {
   boundingbox: BoundingBoxNode,
   database: DatabaseNode,
   flowmap: FlowNode,
+  people: PeopleNode,
 };
 
 const edgeTypes = {
   mindmap: MindMapEdge,
-  flowmap: MindMapEdge,
+  flowmap: SimpleFloatingEdge,
 };
 
 const nodeOrigin: NodeOrigin = [0.5, 0.5];
@@ -92,7 +95,10 @@ function Flow() {
     stroke: diagramType === "mindmap" ? "#F6AD55" : "#000000",
     strokeWidth: diagramType === "mindmap" ? 3 : 2,
   };
-  const defaultEdgeOptions = { style: connectionLineStyle, type: "mindmap" };
+  const defaultEdgeOptions = {
+    style: connectionLineStyle,
+    type: diagramType === "mindmap" ? "mindmap" : "flowmap",
+  };
 
   const getChildNodePosition = (event: MouseEvent, parentNode?: Node) => {
     const { domNode } = store.getState();
@@ -259,6 +265,23 @@ function Flow() {
     };
   }, [deleteNode, selectedNodeId]);
 
+  const addPeopleNode = () => {
+    const position = { x: Math.random() * 200, y: Math.random() * 150 };
+    const newNode = {
+      id: nanoid(), // Generates a unique ID
+      type: "people",
+      data: { label: "Person" },
+      position,
+      dragHandle: ".dragHandle",
+    };
+
+    useStore.setState((prevState) => ({
+      nodes: [...prevState.nodes, newNode],
+    }));
+    setSelectedNodeId(newNode.id);
+    toast("Added new person node!");
+  };
+
   return (
     <>
       <svg style={{ width: 0, height: 0, position: "absolute" }}>
@@ -344,6 +367,14 @@ function Flow() {
                 title="Add Database Node"
               >
                 Add Database
+              </Button>
+              <Button
+                style={{ marginLeft: "5px" }}
+                variant="contained"
+                onClick={addPeopleNode}
+                title="Add People Node"
+              >
+                Add Person
               </Button>
             </>
           )}
