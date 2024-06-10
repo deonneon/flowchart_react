@@ -6,7 +6,7 @@ import {
   getSimpleBezierPath,
 } from "reactflow";
 import useStore from "../store";
-import { getEdgeParams } from "../utils";
+import { getEdgeParams, NodeInternals } from "../utils";
 
 interface SimpleFloatingEdgeProps {
   id: string;
@@ -23,10 +23,10 @@ function SimpleFloatingEdge({
 }: SimpleFloatingEdgeProps) {
   const sourceNode = useReactFlowStore(
     useCallback((store) => store.nodeInternals.get(source), [source])
-  );
+  ) as NodeInternals | undefined;
   const targetNode = useReactFlowStore(
     useCallback((store) => store.nodeInternals.get(target), [target])
-  );
+  ) as NodeInternals | undefined;
 
   if (!sourceNode || !targetNode) {
     return null;
@@ -42,8 +42,8 @@ function SimpleFloatingEdge({
   );
 
   const { sx, sy, tx, ty, sourcePos, targetPos } = getEdgeParams(
-    sourceNode,
-    targetNode
+    sourceNode as NodeInternals,
+    targetNode as NodeInternals
   );
 
   const getEdgePath = () => {

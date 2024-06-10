@@ -8,10 +8,10 @@ interface NodeHandleBounds {
   height: number;
 }
 
-interface NodeInternals extends Node {
+export interface NodeInternals extends Node {
   positionAbsolute?: XYPosition;
-  width?: number;
-  height?: number;
+  width?: number | null; // Allow undefined
+  height?: number | null; // Allow undefined
   [internalsSymbol]: {
     handleBounds: {
       source: NodeHandleBounds[];
@@ -49,6 +49,10 @@ function getHandleCoordsByPosition(
   node: NodeInternals,
   handlePosition: Position
 ): [number, number] {
+  if (!node[internalsSymbol] || !node[internalsSymbol].handleBounds) {
+    throw new Error(`Handle bounds not found for position ${handlePosition}`);
+  }
+
   // all handles are of type source, that's why we use handleBounds.source here
   const handle = node[internalsSymbol].handleBounds.source.find(
     (h) => h.position === handlePosition
@@ -94,9 +98,12 @@ function getNodeCenter(node: NodeInternals): { x: number; y: number } {
     throw new Error(`Node positionAbsolute is undefined for node ${node.id}`);
   }
 
+  const width = node.width ?? 0;
+  const height = node.height ?? 0;
+
   return {
-    x: node.positionAbsolute.x + (node.width ?? 0) / 2,
-    y: node.positionAbsolute.y + (node.height ?? 0) / 2,
+    x: node.positionAbsolute.x + width / 2,
+    y: node.positionAbsolute.y + height / 2,
   };
 }
 
