@@ -80,30 +80,58 @@ function FlowNode({ id, data }: NodeProps<NodeData>) {
           ref={inputRef}
         />
       </div>
-      <Handle type="target" position={Position.Top} isConnectable={true} />
+      {/* Add multiple handles for dynamic connection calculation */}
+      <Handle
+        type="target"
+        position={Position.Top}
+        isConnectable={true}
+        id="top"
+      />
+      <Handle
+        type="target"
+        position={Position.Bottom}
+        isConnectable={true}
+        id="bottom"
+      />
+      <Handle
+        type="target"
+        position={Position.Left}
+        isConnectable={true}
+        id="left"
+      />
+      <Handle
+        type="target"
+        position={Position.Right}
+        isConnectable={true}
+        id="right"
+      />
       <Handle
         type="source"
         position={Position.Top}
         style={{ backgroundColor: data.color }}
         isConnectable={true}
+        id="top"
       />
       <Handle
         type="source"
         position={Position.Bottom}
         style={{ backgroundColor: data.color }}
         isConnectable={true}
+        id="bottom"
       />
       <Handle
         type="source"
         position={Position.Left}
         style={{ backgroundColor: data.color }}
         isConnectable={true}
+        id="left"
       />
       <Handle
         type="source"
         position={Position.Right}
         style={{ backgroundColor: data.color }}
         isConnectable={true}
+        id="right"
       />
     </div>
   );
