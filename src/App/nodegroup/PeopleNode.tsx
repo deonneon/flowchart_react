@@ -68,7 +68,6 @@ const PeopleNode = ({ id, data }: NodeProps<NodeData>) => {
             border: "none",
             fontWeight: "bold",
             width: "100%",
-            pa,
           }}
         />
       </div>
