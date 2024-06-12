@@ -47,7 +47,6 @@ const PeopleNode = ({ id, data }: NodeProps<NodeData>) => {
       onMouseLeave={() => setIsHovered(false)}
       onClick={() => setSelectedNodeId(id)}
       style={{
-        padding: "10px",
         borderRadius: "5px",
         display: "flex",
         flexDirection: "column",
@@ -81,15 +80,8 @@ const PeopleNode = ({ id, data }: NodeProps<NodeData>) => {
           }}
         />
       </div>
-      <div
-        style={{
-          backgroundColor: "white",
-          padding: "5px",
-          borderRadius: "5px",
-        }}
-      >
-        <BoyIcon fontSize="large" sx={{ color: data.color || "black" }} />
-      </div>
+
+      <BoyIcon fontSize="large" sx={{ color: data.color || "black" }} />
       <Handle type="target" position={Position.Top} isConnectable={true} />
       <Handle
         type="source"
