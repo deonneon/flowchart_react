@@ -53,15 +53,7 @@ const PeopleNode = ({ id, data }: NodeProps<NodeData>) => {
         alignItems: "center",
       }}
     >
-      <div
-        className="inputWrapper"
-        style={{
-          borderRadius: "5px",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-        }}
-      >
+      <div className="inputWrapper">
         <div className="dragHandle">
           <DragIcon />
         </div>
@@ -73,7 +65,6 @@ const PeopleNode = ({ id, data }: NodeProps<NodeData>) => {
           style={{
             textAlign: "center",
             marginBottom: "5px",
-            backgroundColor: "transparent",
             border: "none",
             fontWeight: "bold",
             width: "100%",
