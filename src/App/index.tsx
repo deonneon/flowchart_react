@@ -288,9 +288,9 @@ function Flow() {
         <defs>
           <marker
             id="arrow"
-            markerWidth="5"
-            markerHeight="20"
-            refX="4" // Adjust this to control the point where the arrow points meet the target node
+            markerWidth="10" // increased width
+            markerHeight="10" // increased height
+            refX="6" // offset the arrow head
             refY="3"
             orient="auto"
             markerUnits="strokeWidth"
