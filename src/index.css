@@ -33,6 +33,12 @@ body,
   font-weight: 700;
 }
 
+.react-flow__node-people {
+  border-radius: 2px;
+  font-weight: 700;
+  max-width: 100px;
+}
+
 .react-flow__handle.target {
   top: 50%;
   pointer-events: none;
@@ -60,6 +66,7 @@ body,
   z-index: 1;
   position: relative;
   pointer-events: none;
+  width: auto !important;
 }
 
 .dragHandle {
@@ -74,11 +81,9 @@ body,
 
 .input {
   border: none;
-  padding: 0 2px;
   border-radius: 1px;
   font-weight: 700;
   background: transparent;
-  height: 100%;
   color: #222;
   pointer-events: all;
 }

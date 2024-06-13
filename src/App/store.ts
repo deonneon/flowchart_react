@@ -203,7 +203,7 @@ const useStore = createWithEqualityFn<RFState>((set, get) => ({
   },
   copiedNodeId: null,
   cloneNode: () => {
-    const { copiedNodeId, nodes, edges, diagramType } = get();
+    const { copiedNodeId, nodes, diagramType } = get();
     const nodeToClone = nodes.find((node) => node.id === copiedNodeId);
     if (nodeToClone) {
       const newNode = {
@@ -217,20 +217,8 @@ const useStore = createWithEqualityFn<RFState>((set, get) => ({
         dragHandle: ".dragHandle",
       };
 
-      const newEdges = edges
-        .filter(
-          (edge) => edge.source === copiedNodeId || edge.target === copiedNodeId
-        )
-        .map((edge) => ({
-          ...edge,
-          id: nanoid(),
-          source: edge.source === copiedNodeId ? newNode.id : edge.source,
-          target: edge.target === copiedNodeId ? newNode.id : edge.target,
-        }));
-
       set({
         nodes: [...nodes, newNode],
-        edges: [...edges, ...newEdges],
         selectedNodeId: newNode.id,
       });
       toast("Node cloned!");

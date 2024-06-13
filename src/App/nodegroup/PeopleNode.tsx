@@ -47,22 +47,13 @@ const PeopleNode = ({ id, data }: NodeProps<NodeData>) => {
       onMouseLeave={() => setIsHovered(false)}
       onClick={() => setSelectedNodeId(id)}
       style={{
-        padding: "10px",
         borderRadius: "5px",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
       }}
     >
-      <div
-        className="inputWrapper"
-        style={{
-          borderRadius: "5px",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-        }}
-      >
+      <div className="inputWrapper">
         <div className="dragHandle">
           <DragIcon />
         </div>
@@ -74,22 +65,14 @@ const PeopleNode = ({ id, data }: NodeProps<NodeData>) => {
           style={{
             textAlign: "center",
             marginBottom: "5px",
-            backgroundColor: "transparent",
             border: "none",
             fontWeight: "bold",
             width: "100%",
           }}
         />
       </div>
-      <div
-        style={{
-          backgroundColor: "white",
-          padding: "5px",
-          borderRadius: "5px",
-        }}
-      >
-        <BoyIcon fontSize="large" sx={{ color: data.color || "black" }} />
-      </div>
+
+      <BoyIcon fontSize="large" sx={{ color: data.color || "black" }} />
       <Handle type="target" position={Position.Top} isConnectable={true} />
       <Handle
         type="source"

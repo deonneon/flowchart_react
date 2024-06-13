@@ -15,15 +15,13 @@ function downloadImage(dataUrl: string) {
   a.click();
 }
 
+const imageWidth: number = 1024 * 2;
+const imageHeight: number = 768 * 2;
+
 function DownloadButton(): JSX.Element {
   const { getNodes } = useReactFlow();
   const onClick = () => {
     const nodesBounds = getRectOfNodes(getNodes());
-
-    // Get the current window dimensions
-    const imageWidth = window.innerWidth;
-    const imageHeight = window.innerHeight;
-
     const transform = getTransformForBounds(
       nodesBounds,
       imageWidth,

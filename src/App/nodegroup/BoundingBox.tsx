@@ -41,8 +41,6 @@ const BoundingBoxNode = ({ id, data, selected }: NodeProps<NodeData>) => {
   const deleteNode = useStore((state) => state.deleteNode);
   const setSelectedNodeId = useStore((state) => state.setSelectedNodeId);
 
-  const [isHovered, setIsHovered] = useState(false);
-
   return (
     <div
       style={{
@@ -50,9 +48,8 @@ const BoundingBoxNode = ({ id, data, selected }: NodeProps<NodeData>) => {
         width: "100%",
         height: "100%",
         cursor: "default",
+        position: "relative", // Add relative positioning to the container
       }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
       onClick={() => setSelectedNodeId(id)}
     >
       <div className="inputWrapper" style={{ cursor: "grab" }}>
@@ -60,24 +57,22 @@ const BoundingBoxNode = ({ id, data, selected }: NodeProps<NodeData>) => {
           <DragIcon />
         </div>
       </div>
-      {isHovered && (
+      {selected && (
         <NodeResizeControl style={controlStyle} minWidth={100} minHeight={50}>
           <ResizeIcon />
-          <div>
-            <button
-              style={{
-                position: "absolute",
-                borderRadius: "50%",
-                backgroundColor: "pink",
-                border: "0px",
-                right: -10,
-                bottom: -10,
-              }}
-              onClick={() => deleteNode(id)}
-            >
-              -
-            </button>
-          </div>
+          <button
+            style={{
+              position: "absolute",
+              borderRadius: "50%",
+              backgroundColor: "pink",
+              border: "0px",
+              right: -10,
+              bottom: -10,
+            }}
+            onClick={() => deleteNode(id)}
+          >
+            -
+          </button>
         </NodeResizeControl>
       )}
       <div

@@ -1,4 +1,4 @@
-import React from "react";
+import { useEffect } from "react";
 import { toast } from "react-toastify";
 import SaveIcon from "@mui/icons-material/Save";
 import RestoreIcon from "@mui/icons-material/Restore";
@@ -67,6 +67,21 @@ const BottomToolbar: React.FC = () => {
       toast("Restored last saved state!");
     }
   };
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if ((event.ctrlKey || event.metaKey) && event.key === "s") {
+        event.preventDefault();
+        saveToLocal();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
 
   const inactiveStyle = { marginRight: "5px", padding: "10px" };
   const activeStyle = { backgroundColor: "#4CAF50", color: "white" };
