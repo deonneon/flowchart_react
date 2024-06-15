@@ -62,35 +62,31 @@ const InstructionsModal: React.FC<InstructionsModalProps> = ({
         </Typography>
         <Grid container spacing={2} sx={{ mt: 2 }}>
           <Grid item xs={6}>
-            <Typography id="instructions-modal-description">
-              <ul>
-                <li>Click on "Add Node" to add a new node.</li>
-                <li>Click on "Add Text Box" to add a new text box node.</li>
-                <li>Click on "Add Container" to add a bounding box node.</li>
-                <li>Click on "Add Database Node" to add a database node.</li>
-                <li>Click on "Add People Node" to add a people node.</li>
-                <li>
-                  Use the toolbar at the bottom to save or load your mind map.
-                </li>
-                <li>Press "Delete" key to remove selected node or edge.</li>
-              </ul>
-            </Typography>
+            <ul>
+              <li>Click on "Add Node" to add a new node.</li>
+              <li>Click on "Add Text Box" to add a new text box node.</li>
+              <li>Click on "Add Container" to add a bounding box node.</li>
+              <li>Click on "Add Database Node" to add a database node.</li>
+              <li>Click on "Add People Node" to add a people node.</li>
+              <li>
+                Use the toolbar at the bottom to save or load your mind map.
+              </li>
+              <li>Press "Delete" key to remove selected node or edge.</li>
+            </ul>
           </Grid>
           <Divider orientation="vertical" flexItem />
           <Grid item xs={5}>
-            <Typography>
-              <ul>
-                <li>
-                  <FileCopyIcon /> Ctrl + C: Copy
-                </li>
-                <li>
-                  <FileCopyIcon /> Ctrl + V: Paste
-                </li>
-                <li>
-                  <PaletteIcon /> 1-9: Change Color
-                </li>
-              </ul>
-            </Typography>
+            <ul>
+              <li>
+                <FileCopyIcon /> Ctrl + C: Copy
+              </li>
+              <li>
+                <FileCopyIcon /> Ctrl + V: Paste
+              </li>
+              <li>
+                <PaletteIcon /> 1-9: Change Color
+              </li>
+            </ul>
           </Grid>
         </Grid>
         <Button

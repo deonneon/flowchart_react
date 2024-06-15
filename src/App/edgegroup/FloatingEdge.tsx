@@ -91,7 +91,9 @@ function SimpleFloatingEdge({
 
   const handleKeyPress = useCallback(
     (event: any) => {
+      console.log("Key Pressed:", event.key);
       if (event.key === "Delete") {
+        event.preventDefault();
         deleteEdge(id);
       }
     },
