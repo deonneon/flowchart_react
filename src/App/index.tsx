@@ -1,4 +1,4 @@
-import { useCallback, useRef, useEffect } from "react";
+import { useCallback, useRef, useEffect, useState } from "react";
 import ReactFlow, {
   NodeOrigin,
   Node,
@@ -24,6 +24,7 @@ import { Button } from "@mui/material";
 
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import InstructionsModal from "./components/InstructionsModal";
 
 // we need to import the React Flow styles to make it work
 import "reactflow/dist/style.css";
@@ -282,8 +283,19 @@ function Flow() {
     toast("Added new person node!");
   };
 
+  const [isModalOpen, setModalOpen] = useState(false);
+
+  const handleOpenModal = () => {
+    setModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
+  };
+
   return (
     <>
+      <InstructionsModal open={isModalOpen} handleClose={handleCloseModal} />
       <svg style={{ width: 0, height: 0, position: "absolute" }}>
         <defs>
           <marker
@@ -375,6 +387,14 @@ function Flow() {
                 title="Add People Node"
               >
                 Add Person
+              </Button>
+              <Button
+                style={{ marginLeft: "5px" }}
+                variant="contained"
+                onClick={handleOpenModal}
+                title="Show Instructions"
+              >
+                Instructions
               </Button>
             </>
           )}
