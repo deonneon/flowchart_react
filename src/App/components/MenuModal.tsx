@@ -18,6 +18,8 @@ interface MenuModalProps {
   handleClose: () => void;
   showGrid: boolean;
   setShowGrid: (show: boolean) => void;
+  showShadowNodes: boolean;
+  toggleShowShadowNodes: () => void;
 }
 
 const MenuModal: React.FC<MenuModalProps> = ({
@@ -25,6 +27,8 @@ const MenuModal: React.FC<MenuModalProps> = ({
   handleClose,
   showGrid,
   setShowGrid,
+  showShadowNodes,
+  toggleShowShadowNodes,
 }) => {
   const [activeTab, setActiveTab] = useState(0);
   const [darkMode, setDarkMode] = useState(false);
@@ -144,6 +148,15 @@ const MenuModal: React.FC<MenuModalProps> = ({
                   <Switch checked={showGrid} onChange={handleShowGridToggle} />
                 }
                 label="Show Grid"
+              />
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={showShadowNodes}
+                    onChange={toggleShowShadowNodes}
+                  />
+                }
+                label="Enable Shadow Node Assist"
               />
             </Box>
           )}

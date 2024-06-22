@@ -10,6 +10,7 @@ import ReactFlow, {
   Panel,
   MiniMap,
   Background,
+  NodeMouseHandler,
 } from "reactflow";
 import { shallow } from "zustand/shallow";
 import { nanoid } from "nanoid";
@@ -37,9 +38,11 @@ import SimpleFloatingEdge from "./edgegroup/FloatingEdge";
 
 import MenuModal from "./components/MenuModal";
 import MenuIcon from "@mui/icons-material/Menu";
+import ShadowNode from "./nodegroup/ShadowNode";
 
 const nodeTypes = {
   mindmap: MindMapNode,
+  shadow: ShadowNode,
   textbox: TextBoxNode,
   boundingbox: BoundingBoxNode,
   database: DatabaseNode,
@@ -62,11 +65,15 @@ function Flow() {
     onNodesChange,
     onEdgesChange,
     addChildNode,
+    addShadowNode,
+    convertShadowNode,
     setSelectedNodeId,
     diagramType,
     selectedNodeId,
     deleteNode,
     addEdge,
+    showShadowNodes,
+    toggleShowShadowNodes,
   } = useStore(
     (state) => ({
       nodes: state.nodes,
@@ -74,12 +81,16 @@ function Flow() {
       onNodesChange: state.onNodesChange,
       onEdgesChange: state.onEdgesChange,
       addChildNode: state.addChildNode,
+      addShadowNode: state.addShadowNode,
+      convertShadowNode: state.convertShadowNode,
       diagramType: state.diagramType,
       setDiagramType: state.setDiagramType,
       setSelectedNodeId: state.setSelectedNodeId,
       selectedNodeId: state.selectedNodeId,
       deleteNode: state.deleteNode,
       addEdge: state.addEdge,
+      showShadowNodes: state.showShadowNodes,
+      toggleShowShadowNodes: state.toggleShowShadowNodes,
     }),
     shallow
   );
@@ -140,26 +151,11 @@ function Flow() {
   const onConnectEnd: OnConnectEnd = useCallback(
     (event: MouseEvent | TouchEvent) => {
       const { nodeInternals } = store.getState();
-      const targetNodeElement = (event.target as Element).closest(
-        ".react-flow__node"
-      );
-      const targetNodeId = targetNodeElement
-        ? targetNodeElement.getAttribute("data-id")
-        : null;
       const parentNode = connectingNodeId.current
         ? nodeInternals.get(connectingNodeId.current)
         : null;
 
-      if (parentNode && targetNodeId) {
-        // Check if this connection is already present to avoid duplicates
-        const existingConnection = edges.find(
-          (edge) =>
-            edge.source === parentNode.id && edge.target === targetNodeId
-        );
-        if (!existingConnection) {
-          addEdge(parentNode.id, targetNodeId);
-        }
-      } else if (
+      if (
         (event.target as Element).classList.contains("react-flow__pane") &&
         parentNode
       ) {
@@ -168,12 +164,30 @@ function Flow() {
           parentNode
         );
         if (childNodePosition) {
-          addChildNode(parentNode, childNodePosition);
+          const newNodeId = addChildNode(parentNode, childNodePosition);
+          if (showShadowNodes) {
+            // Check if shadow nodes should be added
+            const shadowPosition = {
+              x: childNodePosition.x + 20,
+              y: childNodePosition.y,
+            };
+            addShadowNode(newNodeId, shadowPosition);
+          }
         }
       }
       connectingNodeId.current = null;
     },
-    [getChildNodePosition, addChildNode, edges, addEdge]
+    [getChildNodePosition, addChildNode, addShadowNode, showShadowNodes] // Add showShadowNodes as a dependency
+  );
+
+  const onNodeClick: NodeMouseHandler = useCallback(
+    (_, node) => {
+      if (node.type === "shadow" && showShadowNodes) {
+        // Check if shadow nodes should be converted
+        convertShadowNode(node.id);
+      }
+    },
+    [convertShadowNode, showShadowNodes] // Add showShadowNodes as a dependency
   );
 
   const addEmptyNode = () => {
@@ -304,6 +318,7 @@ function Flow() {
       onEdgesChange={onEdgesChange}
       onConnectStart={onConnectStart}
       onConnectEnd={onConnectEnd}
+      onNodeClick={onNodeClick}
       nodeTypes={nodeTypes}
       edgeTypes={edgeTypes}
       nodeOrigin={nodeOrigin}
@@ -316,6 +331,8 @@ function Flow() {
         handleClose={handleCloseModal}
         showGrid={showGrid}
         setShowGrid={setShowGrid}
+        showShadowNodes={showShadowNodes}
+        toggleShowShadowNodes={toggleShowShadowNodes}
       />
       <Controls />
       <Panel
@@ -392,6 +409,14 @@ function Flow() {
               title="Add People Node"
             >
               Add Person
+            </Button>
+            <Button
+              style={{ marginLeft: "5px" }}
+              variant="contained"
+              onClick={toggleShowShadowNodes} // Add this button to toggle shadow nodes
+              title="Toggle Shadow Nodes"
+            >
+              Toggle Shadow Nodes
             </Button>
           </>
         )}
