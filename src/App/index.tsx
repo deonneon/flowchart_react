@@ -1,4 +1,4 @@
-import { useCallback, useRef, useEffect } from "react";
+import { useCallback, useRef, useEffect, useState } from "react";
 import ReactFlow, {
   NodeOrigin,
   Node,
@@ -10,9 +10,9 @@ import ReactFlow, {
   Panel,
   MiniMap,
   Background,
+  NodeMouseHandler,
 } from "reactflow";
 import { shallow } from "zustand/shallow";
-import { nanoid } from "nanoid";
 
 import useStore from "./store";
 import MindMapNode from "./MindMapNode";
@@ -20,23 +20,25 @@ import MindMapEdge from "./MindMapEdge";
 import TextBoxNode from "./nodegroup/Textbox";
 import BoundingBoxNode from "./nodegroup/BoundingBox";
 import DatabaseNode from "./nodegroup/Database";
-import { Button } from "@mui/material";
 
-import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 // we need to import the React Flow styles to make it work
 import "reactflow/dist/style.css";
 
-import DownloadButton from "./components/DownloadButton";
 import DiagramTypeSwitcher from "./components/DiagramSwitcher";
 import BottomToolbar from "./components/BottomToolbar";
 import FlowNode from "./nodegroup/FlowNode";
 import PeopleNode from "./nodegroup/PeopleNode";
 import SimpleFloatingEdge from "./edgegroup/FloatingEdge";
 
+import ShadowNode from "./nodegroup/ShadowNode";
+import TopRightPanel from "./components/TopRightPanel";
+import SvgDefinitions from "./components/SvgDefinitions";
+
 const nodeTypes = {
   mindmap: MindMapNode,
+  shadow: ShadowNode,
   textbox: TextBoxNode,
   boundingbox: BoundingBoxNode,
   database: DatabaseNode,
@@ -59,11 +61,13 @@ function Flow() {
     onNodesChange,
     onEdgesChange,
     addChildNode,
+    addShadowNode,
+    convertShadowNode,
     setSelectedNodeId,
     diagramType,
     selectedNodeId,
     deleteNode,
-    addEdge,
+    showShadowNodes,
   } = useStore(
     (state) => ({
       nodes: state.nodes,
@@ -71,17 +75,20 @@ function Flow() {
       onNodesChange: state.onNodesChange,
       onEdgesChange: state.onEdgesChange,
       addChildNode: state.addChildNode,
+      addShadowNode: state.addShadowNode,
+      convertShadowNode: state.convertShadowNode,
       diagramType: state.diagramType,
       setDiagramType: state.setDiagramType,
       setSelectedNodeId: state.setSelectedNodeId,
       selectedNodeId: state.selectedNodeId,
       deleteNode: state.deleteNode,
-      addEdge: state.addEdge,
+      showShadowNodes: state.showShadowNodes,
     }),
     shallow
   );
   const { project, setCenter } = useReactFlow();
   const connectingNodeId = useRef<string | null>(null);
+  const [showGrid, setShowGrid] = useState(true);
 
   useEffect(() => {
     if (diagramType === "mindmap") {
@@ -136,26 +143,11 @@ function Flow() {
   const onConnectEnd: OnConnectEnd = useCallback(
     (event: MouseEvent | TouchEvent) => {
       const { nodeInternals } = store.getState();
-      const targetNodeElement = (event.target as Element).closest(
-        ".react-flow__node"
-      );
-      const targetNodeId = targetNodeElement
-        ? targetNodeElement.getAttribute("data-id")
-        : null;
       const parentNode = connectingNodeId.current
         ? nodeInternals.get(connectingNodeId.current)
         : null;
 
-      if (parentNode && targetNodeId) {
-        // Check if this connection is already present to avoid duplicates
-        const existingConnection = edges.find(
-          (edge) =>
-            edge.source === parentNode.id && edge.target === targetNodeId
-        );
-        if (!existingConnection) {
-          addEdge(parentNode.id, targetNodeId);
-        }
-      } else if (
+      if (
         (event.target as Element).classList.contains("react-flow__pane") &&
         parentNode
       ) {
@@ -164,84 +156,31 @@ function Flow() {
           parentNode
         );
         if (childNodePosition) {
-          addChildNode(parentNode, childNodePosition);
+          const newNodeId = addChildNode(parentNode, childNodePosition);
+          if (showShadowNodes) {
+            // Check if shadow nodes should be added
+            const shadowPosition = {
+              x: childNodePosition.x + 20,
+              y: childNodePosition.y,
+            };
+            addShadowNode(newNodeId, shadowPosition);
+          }
         }
       }
       connectingNodeId.current = null;
     },
-    [getChildNodePosition, addChildNode, edges, addEdge]
+    [getChildNodePosition, addChildNode, addShadowNode, showShadowNodes] // Add showShadowNodes as a dependency
   );
 
-  const addEmptyNode = () => {
-    const position = { x: Math.random() * 200, y: Math.random() * 150 };
-    const newNode = {
-      id: nanoid(), // Generates a unique ID
-      type: diagramType === "mindmap" ? "mindmap" : "flowmap",
-      data: { label: "New Node" },
-      position,
-      dragHandle: ".dragHandle",
-    };
-
-    useStore.setState((prevState) => ({
-      nodes: [...prevState.nodes, newNode],
-    }));
-    setSelectedNodeId(newNode.id);
-    toast("Added new node!");
-  };
-
-  const addEmptyTextNode = () => {
-    const position = { x: Math.random() * 200, y: Math.random() * 150 };
-    const newNode = {
-      id: nanoid(), // Generates a unique ID
-      type: "textbox",
-      data: { label: "New Node" },
-      position,
-      dragHandle: ".dragHandle",
-    };
-
-    useStore.setState((prevState) => ({
-      nodes: [...prevState.nodes, newNode],
-    }));
-    setSelectedNodeId(newNode.id);
-    toast("Added new text box!");
-  };
-
-  const addBoundingBoxNode = () => {
-    const position = { x: Math.random() * 200, y: Math.random() * 150 };
-    const newNode = {
-      id: nanoid(), // Generates a unique ID
-      type: "boundingbox",
-      data: { label: "Header" },
-      position,
-      dragHandle: ".dragHandle",
-      style: {
-        border: "1px solid black",
-      },
-    };
-
-    useStore.setState((prevState) => ({
-      nodes: [...prevState.nodes, newNode],
-    }));
-    setSelectedNodeId(newNode.id);
-    toast("Added new bounding box!");
-  };
-
-  const addDatabaseNode = () => {
-    const position = { x: Math.random() * 200, y: Math.random() * 150 };
-    const newNode = {
-      id: nanoid(), // Generates a unique ID
-      type: "database",
-      data: { label: "Database Name" },
-      position,
-      dragHandle: ".dragHandle",
-    };
-
-    useStore.setState((prevState) => ({
-      nodes: [...prevState.nodes, newNode],
-    }));
-    setSelectedNodeId(newNode.id);
-    toast("Added new bounding box!");
-  };
+  const onNodeClick: NodeMouseHandler = useCallback(
+    (_, node) => {
+      if (node.type === "shadow" && showShadowNodes) {
+        // Check if shadow nodes should be converted
+        convertShadowNode(node.id);
+      }
+    },
+    [convertShadowNode, showShadowNodes] // Add showShadowNodes as a dependency
+  );
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -265,126 +204,36 @@ function Flow() {
     };
   }, [deleteNode, selectedNodeId]);
 
-  const addPeopleNode = () => {
-    const position = { x: Math.random() * 200, y: Math.random() * 150 };
-    const newNode = {
-      id: nanoid(), // Generates a unique ID
-      type: "people",
-      data: { label: "Person" },
-      position,
-      dragHandle: ".dragHandle",
-    };
-
-    useStore.setState((prevState) => ({
-      nodes: [...prevState.nodes, newNode],
-    }));
-    setSelectedNodeId(newNode.id);
-    toast("Added new person node!");
-  };
-
   return (
-    <>
-      <svg style={{ width: 0, height: 0, position: "absolute" }}>
-        <defs>
-          <marker
-            id="arrow"
-            markerWidth="10" // increased width
-            markerHeight="10" // increased height
-            refX="6" // offset the arrow head
-            refY="3"
-            orient="auto"
-            markerUnits="strokeWidth"
-            viewBox="0 0 10 10"
-          >
-            <path d="M0,0 L0,6 L9,3 z" fill="#333" />
-          </marker>
-        </defs>
-      </svg>
-      <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
-        onConnectStart={onConnectStart}
-        onConnectEnd={onConnectEnd}
-        nodeTypes={nodeTypes}
-        edgeTypes={edgeTypes}
-        nodeOrigin={nodeOrigin}
-        defaultEdgeOptions={defaultEdgeOptions}
-        connectionLineStyle={connectionLineStyle}
-        fitView
+    <ReactFlow
+      nodes={nodes}
+      edges={edges}
+      onNodesChange={onNodesChange}
+      onEdgesChange={onEdgesChange}
+      onConnectStart={onConnectStart}
+      onConnectEnd={onConnectEnd}
+      onNodeClick={onNodeClick}
+      nodeTypes={nodeTypes}
+      edgeTypes={edgeTypes}
+      nodeOrigin={nodeOrigin}
+      defaultEdgeOptions={defaultEdgeOptions}
+      connectionLineStyle={connectionLineStyle}
+      fitView
+    >
+      <Controls />
+      <Panel
+        position="top-left"
+        className="header"
+        style={{ display: "flex", alignItems: "center" }}
       >
-        <Controls />
-        <Panel position="top-left" className="header">
-          <ToastContainer
-            position="top-right"
-            style={{
-              marginTop: "40px",
-              width: "13%",
-              fontSize: "0.7rem",
-              zIndex: 1000,
-            }}
-            autoClose={2000}
-            hideProgressBar={true}
-            newestOnTop={true}
-            closeOnClick
-            rtl={false}
-            pauseOnFocusLoss
-            draggable
-            pauseOnHover
-          />
-          <DownloadButton />
-          <Button
-            style={{ marginLeft: "5px" }}
-            variant="contained"
-            onClick={addEmptyNode}
-            title="Add Empty Node"
-          >
-            Add Node
-          </Button>
-          <Button
-            style={{ marginLeft: "5px" }}
-            variant="contained"
-            onClick={addEmptyTextNode}
-            title="Add Text Box"
-          >
-            Add Text
-          </Button>
-          {diagramType === "flow" && (
-            <>
-              <Button
-                style={{ marginLeft: "5px" }}
-                variant="contained"
-                onClick={addBoundingBoxNode}
-                title="Add Bounding Box"
-              >
-                Add Container
-              </Button>
-              <Button
-                style={{ marginLeft: "5px" }}
-                variant="contained"
-                onClick={addDatabaseNode}
-                title="Add Database Node"
-              >
-                Add Database
-              </Button>
-              <Button
-                style={{ marginLeft: "5px" }}
-                variant="contained"
-                onClick={addPeopleNode}
-                title="Add People Node"
-              >
-                Add Person
-              </Button>
-            </>
-          )}
-        </Panel>
-        <BottomToolbar />
-        <DiagramTypeSwitcher nodes={nodes} setCenter={setCenter} />
-        <Background />
-        <MiniMap />
-      </ReactFlow>
-    </>
+        <TopRightPanel />
+      </Panel>
+      <BottomToolbar />
+      <DiagramTypeSwitcher nodes={nodes} setCenter={setCenter} />
+      {showGrid && <Background />}
+      <MiniMap />
+      <SvgDefinitions />
+    </ReactFlow>
   );
 }
 

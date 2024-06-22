@@ -116,3 +116,18 @@ body,
   stroke-width: 1;
   fill: salmon;
 }
+
+body.dark-mode {
+  background-color: #1e1e1e;
+  color: #ffffff;
+}
+
+body.dark-mode .react-flow__node {
+  background-color: #333333;
+  color: #ffffff;
+}
+
+body.dark-mode .react-flow__handle {
+  background-color: #444444;
+  border: 1px solid #555555;
+}

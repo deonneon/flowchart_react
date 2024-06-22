@@ -40,7 +40,11 @@ export type RFState = {
   onNodesChange: OnNodesChange;
   onEdgesChange: OnEdgesChange;
   updateNodeLabel: (nodeId: string, label: string) => void;
-  addChildNode: (parentNode: Node, position: XYPosition) => void;
+  showShadowNodes: boolean;
+  toggleShowShadowNodes: () => void;
+  addChildNode: (parentNode: Node, position: XYPosition) => string;
+  addShadowNode: (parentId: string, position: XYPosition) => void;
+  convertShadowNode: (shadowNodeId: string) => void;
   edgePathType: "smooth" | "straight" | "bezier";
   diagramType: DiagramType;
   setDiagramType: (diagramType: DiagramType) => void;
@@ -55,6 +59,11 @@ export type RFState = {
   copiedNodeId: string | null;
   deleteEdge: (id: string) => void;
   toggleEdgeStyle: (id: string) => void;
+  addEmptyNode: () => void;
+  addEmptyTextNode: () => void;
+  addBoundingBoxNode: () => void;
+  addDatabaseNode: () => void;
+  addPeopleNode: () => void;
 };
 
 const useStore = createWithEqualityFn<RFState>((set, get) => ({
@@ -167,8 +176,9 @@ const useStore = createWithEqualityFn<RFState>((set, get) => ({
     });
   },
   addChildNode: (parentNode: Node, position: XYPosition) => {
+    const newNodeId = nanoid();
     const newNode = {
-      id: nanoid(),
+      id: newNodeId,
       type: get().diagramType === "mindmap" ? "mindmap" : "flowmap",
       data: {
         label: "New Node",
@@ -182,15 +192,74 @@ const useStore = createWithEqualityFn<RFState>((set, get) => ({
     const newEdge = {
       id: nanoid(),
       source: parentNode.id,
-      target: newNode.id,
+      target: newNodeId,
     };
 
-    set({
-      nodes: [...get().nodes, newNode],
-      edges: [...get().edges, newEdge],
-      selectedNodeId: newNode.id,
+    set((state) => ({
+      nodes: [...state.nodes, newNode],
+      edges: [...state.edges, newEdge],
+      selectedNodeId: newNodeId,
+    }));
+
+    return newNodeId;
+  },
+
+  addShadowNode: (parentId: string, position: XYPosition) => {
+    const shadowNodeId = `shadow-${nanoid()}`;
+    const shadowNode: Node<NodeData> = {
+      id: shadowNodeId,
+      type: "shadow",
+      data: { label: "New Node" },
+      position,
+      parentNode: parentId,
+    };
+
+    const shadowEdge: Edge = {
+      id: `shadow-edge-${nanoid()}`,
+      source: parentId,
+      target: shadowNodeId,
+      style: { stroke: "#ccc", strokeDasharray: "5,5" },
+    };
+
+    set((state) => ({
+      nodes: [...state.nodes, shadowNode],
+      edges: [...state.edges, shadowEdge],
+    }));
+  },
+
+  convertShadowNode: (shadowNodeId: string) => {
+    set((state) => {
+      const shadowNode = state.nodes.find((node) => node.id === shadowNodeId);
+      if (!shadowNode) return state;
+
+      const newNodeId = nanoid();
+      const newNode: Node<NodeData> = {
+        ...shadowNode,
+        id: newNodeId,
+        type: state.diagramType === "mindmap" ? "mindmap" : "flowmap",
+        data: { ...shadowNode.data, label: "New Node" },
+      };
+
+      const newEdge: Edge = {
+        id: nanoid(),
+        source: shadowNode.parentNode!,
+        target: newNodeId,
+      };
+
+      return {
+        nodes: [
+          ...state.nodes.filter((node) => node.id !== shadowNodeId),
+          newNode,
+        ],
+        edges: [
+          ...state.edges.filter((edge) => edge.target !== shadowNodeId),
+          newEdge,
+        ],
+        selectedNodeId: newNodeId,
+      };
     });
   },
+
   updateNodeColor: (nodeId: string, color: string) => {
     set({
       nodes: get().nodes.map((node) => {
@@ -201,6 +270,15 @@ const useStore = createWithEqualityFn<RFState>((set, get) => ({
       }),
     });
   },
+
+  showShadowNodes: false,
+
+  toggleShowShadowNodes: () => {
+    set((state) => ({
+      showShadowNodes: !state.showShadowNodes,
+    }));
+  },
+
   copiedNodeId: null,
   cloneNode: () => {
     const { copiedNodeId, nodes, diagramType } = get();
@@ -211,8 +289,8 @@ const useStore = createWithEqualityFn<RFState>((set, get) => ({
         type: nodeToClone.type,
         data: { label: `Clone of ${nodeToClone.data.label}` }, // Create a new data object
         position: {
-          x: nodeToClone.position.x + 50,
-          y: nodeToClone.position.y + 50,
+          x: nodeToClone.position.x + 1,
+          y: nodeToClone.position.y + 1,
         },
         dragHandle: ".dragHandle",
       };
@@ -244,6 +322,99 @@ const useStore = createWithEqualityFn<RFState>((set, get) => ({
         return edge;
       }),
     });
+  },
+
+  addEmptyNode: () => {
+    const { diagramType, setSelectedNodeId } = get();
+    const position = { x: Math.random() * 200, y: Math.random() * 150 };
+    const newNode = {
+      id: nanoid(), // Generates a unique ID
+      type: diagramType === "mindmap" ? "mindmap" : "flowmap",
+      data: { label: "New Node" },
+      position,
+      dragHandle: ".dragHandle",
+    };
+
+    set((prevState) => ({
+      nodes: [...prevState.nodes, newNode],
+    }));
+    setSelectedNodeId(newNode.id);
+    toast("Added new node!");
+  },
+
+  addEmptyTextNode: () => {
+    const { setSelectedNodeId } = get();
+    const position = { x: Math.random() * 200, y: Math.random() * 150 };
+    const newNode = {
+      id: nanoid(), // Generates a unique ID
+      type: "textbox",
+      data: { label: "New Node" },
+      position,
+      dragHandle: ".dragHandle",
+    };
+
+    set((prevState) => ({
+      nodes: [...prevState.nodes, newNode],
+    }));
+    setSelectedNodeId(newNode.id);
+    toast("Added new text box!");
+  },
+
+  addBoundingBoxNode: () => {
+    const { setSelectedNodeId } = get();
+    const position = { x: Math.random() * 200, y: Math.random() * 150 };
+    const newNode = {
+      id: nanoid(), // Generates a unique ID
+      type: "boundingbox",
+      data: { label: "Header" },
+      position,
+      dragHandle: ".dragHandle",
+      style: {
+        border: "1px solid black",
+      },
+    };
+
+    set((prevState) => ({
+      nodes: [...prevState.nodes, newNode],
+    }));
+    setSelectedNodeId(newNode.id);
+    toast("Added new bounding box!");
+  },
+
+  addDatabaseNode: () => {
+    const { setSelectedNodeId } = get();
+    const position = { x: Math.random() * 200, y: Math.random() * 150 };
+    const newNode = {
+      id: nanoid(), // Generates a unique ID
+      type: "database",
+      data: { label: "Database Name" },
+      position,
+      dragHandle: ".dragHandle",
+    };
+
+    set((prevState) => ({
+      nodes: [...prevState.nodes, newNode],
+    }));
+    setSelectedNodeId(newNode.id);
+    toast("Added new bounding box!");
+  },
+
+  addPeopleNode: () => {
+    const { setSelectedNodeId } = get();
+    const position = { x: Math.random() * 200, y: Math.random() * 150 };
+    const newNode = {
+      id: nanoid(), // Generates a unique ID
+      type: "people",
+      data: { label: "Person" },
+      position,
+      dragHandle: ".dragHandle",
+    };
+
+    set((prevState) => ({
+      nodes: [...prevState.nodes, newNode],
+    }));
+    setSelectedNodeId(newNode.id);
+    toast("Added new person node!");
   },
 }));
 

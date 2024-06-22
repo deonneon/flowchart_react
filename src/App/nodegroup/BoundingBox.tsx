@@ -1,4 +1,4 @@
-import { useState, memo } from "react";
+import { memo } from "react";
 import { NodeProps, Position, NodeResizeControl } from "reactflow";
 import useStore from "../store";
 import DragIcon from "./DragIcon";
