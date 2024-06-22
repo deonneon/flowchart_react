@@ -1,4 +1,3 @@
-// File: ./src/App/nodegroup/PeopleNode.tsx
 import { useEffect, useRef, useState } from "react";
 import { Handle, NodeProps, Position } from "reactflow";
 import useStore from "../store";

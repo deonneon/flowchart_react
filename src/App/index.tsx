@@ -13,7 +13,6 @@ import ReactFlow, {
   NodeMouseHandler,
 } from "reactflow";
 import { shallow } from "zustand/shallow";
-import { nanoid } from "nanoid";
 
 import useStore from "./store";
 import MindMapNode from "./MindMapNode";
@@ -21,24 +20,20 @@ import MindMapEdge from "./MindMapEdge";
 import TextBoxNode from "./nodegroup/Textbox";
 import BoundingBoxNode from "./nodegroup/BoundingBox";
 import DatabaseNode from "./nodegroup/Database";
-import { Button } from "@mui/material";
 
-import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 // we need to import the React Flow styles to make it work
 import "reactflow/dist/style.css";
 
-import DownloadButton from "./components/DownloadButton";
 import DiagramTypeSwitcher from "./components/DiagramSwitcher";
 import BottomToolbar from "./components/BottomToolbar";
 import FlowNode from "./nodegroup/FlowNode";
 import PeopleNode from "./nodegroup/PeopleNode";
 import SimpleFloatingEdge from "./edgegroup/FloatingEdge";
 
-import MenuModal from "./components/MenuModal";
-import MenuIcon from "@mui/icons-material/Menu";
 import ShadowNode from "./nodegroup/ShadowNode";
+import TopRightPanel from "./components/TopRightPanel";
 
 const nodeTypes = {
   mindmap: MindMapNode,
@@ -71,9 +66,7 @@ function Flow() {
     diagramType,
     selectedNodeId,
     deleteNode,
-    addEdge,
     showShadowNodes,
-    toggleShowShadowNodes,
   } = useStore(
     (state) => ({
       nodes: state.nodes,
@@ -88,9 +81,7 @@ function Flow() {
       setSelectedNodeId: state.setSelectedNodeId,
       selectedNodeId: state.selectedNodeId,
       deleteNode: state.deleteNode,
-      addEdge: state.addEdge,
       showShadowNodes: state.showShadowNodes,
-      toggleShowShadowNodes: state.toggleShowShadowNodes,
     }),
     shallow
   );
@@ -190,77 +181,6 @@ function Flow() {
     [convertShadowNode, showShadowNodes] // Add showShadowNodes as a dependency
   );
 
-  const addEmptyNode = () => {
-    const position = { x: Math.random() * 200, y: Math.random() * 150 };
-    const newNode = {
-      id: nanoid(), // Generates a unique ID
-      type: diagramType === "mindmap" ? "mindmap" : "flowmap",
-      data: { label: "New Node" },
-      position,
-      dragHandle: ".dragHandle",
-    };
-
-    useStore.setState((prevState) => ({
-      nodes: [...prevState.nodes, newNode],
-    }));
-    setSelectedNodeId(newNode.id);
-    toast("Added new node!");
-  };
-
-  const addEmptyTextNode = () => {
-    const position = { x: Math.random() * 200, y: Math.random() * 150 };
-    const newNode = {
-      id: nanoid(), // Generates a unique ID
-      type: "textbox",
-      data: { label: "New Node" },
-      position,
-      dragHandle: ".dragHandle",
-    };
-
-    useStore.setState((prevState) => ({
-      nodes: [...prevState.nodes, newNode],
-    }));
-    setSelectedNodeId(newNode.id);
-    toast("Added new text box!");
-  };
-
-  const addBoundingBoxNode = () => {
-    const position = { x: Math.random() * 200, y: Math.random() * 150 };
-    const newNode = {
-      id: nanoid(), // Generates a unique ID
-      type: "boundingbox",
-      data: { label: "Header" },
-      position,
-      dragHandle: ".dragHandle",
-      style: {
-        border: "1px solid black",
-      },
-    };
-
-    useStore.setState((prevState) => ({
-      nodes: [...prevState.nodes, newNode],
-    }));
-    setSelectedNodeId(newNode.id);
-    toast("Added new bounding box!");
-  };
-
-  const addDatabaseNode = () => {
-    const position = { x: Math.random() * 200, y: Math.random() * 150 };
-    const newNode = {
-      id: nanoid(), // Generates a unique ID
-      type: "database",
-      data: { label: "Database Name" },
-      position,
-      dragHandle: ".dragHandle",
-    };
-
-    useStore.setState((prevState) => ({
-      nodes: [...prevState.nodes, newNode],
-    }));
-    setSelectedNodeId(newNode.id);
-    toast("Added new bounding box!");
-  };
-
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       const isCopy = (event.ctrlKey || event.metaKey) && event.key === "c";
@@ -283,33 +203,6 @@ function Flow() {
     };
   }, [deleteNode, selectedNodeId]);
 
-  const addPeopleNode = () => {
-    const position = { x: Math.random() * 200, y: Math.random() * 150 };
-    const newNode = {
-      id: nanoid(), // Generates a unique ID
-      type: "people",
-      data: { label: "Person" },
-      position,
-      dragHandle: ".dragHandle",
-    };
-
-    useStore.setState((prevState) => ({
-      nodes: [...prevState.nodes, newNode],
-    }));
-    setSelectedNodeId(newNode.id);
-    toast("Added new person node!");
-  };
-
-  const [isModalOpen, setModalOpen] = useState(false);
-
-  const handleOpenModal = () => {
-    setModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setModalOpen(false);
-  };
-
   return (
     <ReactFlow
       nodes={nodes}
@@ -326,92 +219,13 @@ function Flow() {
       connectionLineStyle={connectionLineStyle}
       fitView
     >
-      <MenuModal
-        open={isModalOpen}
-        handleClose={handleCloseModal}
-        showGrid={showGrid}
-        setShowGrid={setShowGrid}
-        showShadowNodes={showShadowNodes}
-        toggleShowShadowNodes={toggleShowShadowNodes}
-      />
       <Controls />
       <Panel
         position="top-left"
         className="header"
         style={{ display: "flex", alignItems: "center" }}
       >
-        <ToastContainer
-          position="top-right"
-          style={{
-            marginTop: "40px",
-            width: "13%",
-            fontSize: "0.7rem",
-            zIndex: 1000,
-          }}
-          autoClose={2000}
-          hideProgressBar={true}
-          newestOnTop={true}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-        />
-        <Button
-          onClick={handleOpenModal}
-          title="Show Instructions"
-          style={{
-            marginRight: "5px",
-          }}
-          variant="outlined"
-        >
-          <MenuIcon />
-        </Button>
-        <DownloadButton />
-        <Button
-          style={{ marginLeft: "5px" }}
-          variant="contained"
-          onClick={addEmptyNode}
-          title="Add Empty Node"
-        >
-          Add Node
-        </Button>
-        <Button
-          style={{ marginLeft: "5px" }}
-          variant="contained"
-          onClick={addEmptyTextNode}
-          title="Add Text Box"
-        >
-          Add Text
-        </Button>
-        {diagramType === "flow" && (
-          <>
-            <Button
-              style={{ marginLeft: "5px" }}
-              variant="contained"
-              onClick={addBoundingBoxNode}
-              title="Add Bounding Box"
-            >
-              Add Container
-            </Button>
-            <Button
-              style={{ marginLeft: "5px" }}
-              variant="contained"
-              onClick={addDatabaseNode}
-              title="Add Database Node"
-            >
-              Add Database
-            </Button>
-            <Button
-              style={{ marginLeft: "5px" }}
-              variant="contained"
-              onClick={addPeopleNode}
-              title="Add People Node"
-            >
-              Add Person
-            </Button>
-          </>
-        )}
+        <TopRightPanel />
       </Panel>
       <BottomToolbar />
       <DiagramTypeSwitcher nodes={nodes} setCenter={setCenter} />

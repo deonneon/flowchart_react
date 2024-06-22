@@ -59,6 +59,11 @@ export type RFState = {
   copiedNodeId: string | null;
   deleteEdge: (id: string) => void;
   toggleEdgeStyle: (id: string) => void;
+  addEmptyNode: () => void;
+  addEmptyTextNode: () => void;
+  addBoundingBoxNode: () => void;
+  addDatabaseNode: () => void;
+  addPeopleNode: () => void;
 };
 
 const useStore = createWithEqualityFn<RFState>((set, get) => ({
@@ -317,6 +322,99 @@ const useStore = createWithEqualityFn<RFState>((set, get) => ({
         return edge;
       }),
     });
+  },
+
+  addEmptyNode: () => {
+    const { diagramType, setSelectedNodeId } = get();
+    const position = { x: Math.random() * 200, y: Math.random() * 150 };
+    const newNode = {
+      id: nanoid(), // Generates a unique ID
+      type: diagramType === "mindmap" ? "mindmap" : "flowmap",
+      data: { label: "New Node" },
+      position,
+      dragHandle: ".dragHandle",
+    };
+
+    set((prevState) => ({
+      nodes: [...prevState.nodes, newNode],
+    }));
+    setSelectedNodeId(newNode.id);
+    toast("Added new node!");
+  },
+
+  addEmptyTextNode: () => {
+    const { setSelectedNodeId } = get();
+    const position = { x: Math.random() * 200, y: Math.random() * 150 };
+    const newNode = {
+      id: nanoid(), // Generates a unique ID
+      type: "textbox",
+      data: { label: "New Node" },
+      position,
+      dragHandle: ".dragHandle",
+    };
+
+    set((prevState) => ({
+      nodes: [...prevState.nodes, newNode],
+    }));
+    setSelectedNodeId(newNode.id);
+    toast("Added new text box!");
+  },
+
+  addBoundingBoxNode: () => {
+    const { setSelectedNodeId } = get();
+    const position = { x: Math.random() * 200, y: Math.random() * 150 };
+    const newNode = {
+      id: nanoid(), // Generates a unique ID
+      type: "boundingbox",
+      data: { label: "Header" },
+      position,
+      dragHandle: ".dragHandle",
+      style: {
+        border: "1px solid black",
+      },
+    };
+
+    set((prevState) => ({
+      nodes: [...prevState.nodes, newNode],
+    }));
+    setSelectedNodeId(newNode.id);
+    toast("Added new bounding box!");
+  },
+
+  addDatabaseNode: () => {
+    const { setSelectedNodeId } = get();
+    const position = { x: Math.random() * 200, y: Math.random() * 150 };
+    const newNode = {
+      id: nanoid(), // Generates a unique ID
+      type: "database",
+      data: { label: "Database Name" },
+      position,
+      dragHandle: ".dragHandle",
+    };
+
+    set((prevState) => ({
+      nodes: [...prevState.nodes, newNode],
+    }));
+    setSelectedNodeId(newNode.id);
+    toast("Added new bounding box!");
+  },
+
+  addPeopleNode: () => {
+    const { setSelectedNodeId } = get();
+    const position = { x: Math.random() * 200, y: Math.random() * 150 };
+    const newNode = {
+      id: nanoid(), // Generates a unique ID
+      type: "people",
+      data: { label: "Person" },
+      position,
+      dragHandle: ".dragHandle",
+    };
+
+    set((prevState) => ({
+      nodes: [...prevState.nodes, newNode],
+    }));
+    setSelectedNodeId(newNode.id);
+    toast("Added new person node!");
   },
 }));
 
