@@ -24,7 +24,6 @@ import { Button } from "@mui/material";
 
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import InstructionsModal from "./components/InstructionsModal";
 
 // we need to import the React Flow styles to make it work
 import "reactflow/dist/style.css";
@@ -35,6 +34,10 @@ import BottomToolbar from "./components/BottomToolbar";
 import FlowNode from "./nodegroup/FlowNode";
 import PeopleNode from "./nodegroup/PeopleNode";
 import SimpleFloatingEdge from "./edgegroup/FloatingEdge";
+
+import InstructionsModal from "./components/InstructionsModal";
+import MenuIcon from "@mui/icons-material/Menu";
+import Paper from "@mui/material/Paper";
 
 const nodeTypes = {
   mindmap: MindMapNode,
@@ -294,117 +297,121 @@ function Flow() {
   };
 
   return (
-    <>
+    <ReactFlow
+      nodes={nodes}
+      edges={edges}
+      onNodesChange={onNodesChange}
+      onEdgesChange={onEdgesChange}
+      onConnectStart={onConnectStart}
+      onConnectEnd={onConnectEnd}
+      nodeTypes={nodeTypes}
+      edgeTypes={edgeTypes}
+      nodeOrigin={nodeOrigin}
+      defaultEdgeOptions={defaultEdgeOptions}
+      connectionLineStyle={connectionLineStyle}
+      fitView
+    >
       <InstructionsModal open={isModalOpen} handleClose={handleCloseModal} />
-      <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
-        onConnectStart={onConnectStart}
-        onConnectEnd={onConnectEnd}
-        nodeTypes={nodeTypes}
-        edgeTypes={edgeTypes}
-        nodeOrigin={nodeOrigin}
-        defaultEdgeOptions={defaultEdgeOptions}
-        connectionLineStyle={connectionLineStyle}
-        fitView
+      <Controls />
+      <Panel
+        position="top-left"
+        className="header"
+        style={{ display: "flex", alignItems: "center" }}
       >
-        <Controls />
-        <Panel position="top-left" className="header">
-          <ToastContainer
-            position="top-right"
-            style={{
-              marginTop: "40px",
-              width: "13%",
-              fontSize: "0.7rem",
-              zIndex: 1000,
-            }}
-            autoClose={2000}
-            hideProgressBar={true}
-            newestOnTop={true}
-            closeOnClick
-            rtl={false}
-            pauseOnFocusLoss
-            draggable
-            pauseOnHover
-          />
-          <DownloadButton />
-          <Button
-            style={{ marginLeft: "5px" }}
-            variant="contained"
-            onClick={addEmptyNode}
-            title="Add Empty Node"
-          >
-            Add Node
-          </Button>
-          <Button
-            style={{ marginLeft: "5px" }}
-            variant="contained"
-            onClick={addEmptyTextNode}
-            title="Add Text Box"
-          >
-            Add Text
-          </Button>
-          {diagramType === "flow" && (
-            <>
-              <Button
-                style={{ marginLeft: "5px" }}
-                variant="contained"
-                onClick={addBoundingBoxNode}
-                title="Add Bounding Box"
-              >
-                Add Container
-              </Button>
-              <Button
-                style={{ marginLeft: "5px" }}
-                variant="contained"
-                onClick={addDatabaseNode}
-                title="Add Database Node"
-              >
-                Add Database
-              </Button>
-              <Button
-                style={{ marginLeft: "5px" }}
-                variant="contained"
-                onClick={addPeopleNode}
-                title="Add People Node"
-              >
-                Add Person
-              </Button>
-              <Button
-                style={{ marginLeft: "5px" }}
-                variant="contained"
-                onClick={handleOpenModal}
-                title="Show Instructions"
-              >
-                Instructions
-              </Button>
-            </>
-          )}
-        </Panel>
-        <BottomToolbar />
-        <DiagramTypeSwitcher nodes={nodes} setCenter={setCenter} />
-        <Background />
-        <MiniMap />
-        <svg id="defs" style={{ width: 0, height: 0, position: "absolute" }}>
-          <defs>
-            <marker
-              id="arrow"
-              markerWidth="10" // increased width
-              markerHeight="10" // increased height
-              refX="6" // offset the arrow head
-              refY="3"
-              orient="auto"
-              markerUnits="strokeWidth"
-              viewBox="0 0 10 10"
+        <ToastContainer
+          position="top-right"
+          style={{
+            marginTop: "40px",
+            width: "13%",
+            fontSize: "0.7rem",
+            zIndex: 1000,
+          }}
+          autoClose={2000}
+          hideProgressBar={true}
+          newestOnTop={true}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+        />
+        <Button
+          onClick={handleOpenModal}
+          title="Show Instructions"
+          style={{
+            marginRight: "5px",
+          }}
+          variant="outlined"
+        >
+          <MenuIcon />
+        </Button>
+        <DownloadButton />
+        <Button
+          style={{ marginLeft: "5px" }}
+          variant="contained"
+          onClick={addEmptyNode}
+          title="Add Empty Node"
+        >
+          Add Node
+        </Button>
+        <Button
+          style={{ marginLeft: "5px" }}
+          variant="contained"
+          onClick={addEmptyTextNode}
+          title="Add Text Box"
+        >
+          Add Text
+        </Button>
+        {diagramType === "flow" && (
+          <>
+            <Button
+              style={{ marginLeft: "5px" }}
+              variant="contained"
+              onClick={addBoundingBoxNode}
+              title="Add Bounding Box"
             >
-              <path d="M0,0 L0,6 L9,3 z" fill="#333" />
-            </marker>
-          </defs>
-        </svg>
-      </ReactFlow>
-    </>
+              Add Container
+            </Button>
+            <Button
+              style={{ marginLeft: "5px" }}
+              variant="contained"
+              onClick={addDatabaseNode}
+              title="Add Database Node"
+            >
+              Add Database
+            </Button>
+            <Button
+              style={{ marginLeft: "5px" }}
+              variant="contained"
+              onClick={addPeopleNode}
+              title="Add People Node"
+            >
+              Add Person
+            </Button>
+          </>
+        )}
+      </Panel>
+      <BottomToolbar />
+      <DiagramTypeSwitcher nodes={nodes} setCenter={setCenter} />
+      <Background />
+      <MiniMap />
+      <svg id="defs" style={{ width: 0, height: 0, position: "absolute" }}>
+        <defs>
+          <marker
+            id="arrow"
+            markerWidth="10" // increased width
+            markerHeight="10" // increased height
+            refX="6" // offset the arrow head
+            refY="3"
+            orient="auto"
+            markerUnits="strokeWidth"
+            viewBox="0 0 10 10"
+          >
+            <path d="M0,0 L0,6 L9,3 z" fill="#333" />
+          </marker>
+        </defs>
+      </svg>
+    </ReactFlow>
   );
 }
 
