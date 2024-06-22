@@ -85,6 +85,7 @@ function Flow() {
   );
   const { project, setCenter } = useReactFlow();
   const connectingNodeId = useRef<string | null>(null);
+  const [showGrid, setShowGrid] = useState(true);
 
   useEffect(() => {
     if (diagramType === "mindmap") {
@@ -310,7 +311,12 @@ function Flow() {
       connectionLineStyle={connectionLineStyle}
       fitView
     >
-      <MenuModal open={isModalOpen} handleClose={handleCloseModal} />
+      <MenuModal
+        open={isModalOpen}
+        handleClose={handleCloseModal}
+        showGrid={showGrid}
+        setShowGrid={setShowGrid}
+      />
       <Controls />
       <Panel
         position="top-left"
@@ -392,7 +398,7 @@ function Flow() {
       </Panel>
       <BottomToolbar />
       <DiagramTypeSwitcher nodes={nodes} setCenter={setCenter} />
-      <Background />
+      {showGrid && <Background />}
       <MiniMap />
       <svg id="defs" style={{ width: 0, height: 0, position: "absolute" }}>
         <defs>

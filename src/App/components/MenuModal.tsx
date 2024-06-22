@@ -7,6 +7,8 @@ import {
   Stack,
   Tabs,
   Tab,
+  Switch,
+  FormControlLabel,
 } from "@mui/material";
 import FileCopyIcon from "@mui/icons-material/FileCopy";
 import PaletteIcon from "@mui/icons-material/Palette";
@@ -14,13 +16,39 @@ import PaletteIcon from "@mui/icons-material/Palette";
 interface MenuModalProps {
   open: boolean;
   handleClose: () => void;
+  showGrid: boolean;
+  setShowGrid: (show: boolean) => void;
 }
 
-const MenuModal: React.FC<MenuModalProps> = ({ open, handleClose }) => {
+const MenuModal: React.FC<MenuModalProps> = ({
+  open,
+  handleClose,
+  showGrid,
+  setShowGrid,
+}) => {
   const [activeTab, setActiveTab] = useState(0);
+  const [darkMode, setDarkMode] = useState(false);
+  const [defaultNodeColor, setDefaultNodeColor] = useState("#3498db");
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue);
+  };
+
+  const applyDarkMode = (enabled: boolean) => {
+    if (enabled) {
+      document.body.classList.add("dark-mode");
+    } else {
+      document.body.classList.remove("dark-mode");
+    }
+  };
+
+  const handleDarkModeToggle = () => {
+    setDarkMode(!darkMode);
+    applyDarkMode(!darkMode);
+  };
+
+  const handleShowGridToggle = () => {
+    setShowGrid(!showGrid);
   };
 
   return (
@@ -37,7 +65,7 @@ const MenuModal: React.FC<MenuModalProps> = ({ open, handleClose }) => {
           left: "50%",
           transform: "translate(-50%, -50%)",
           width: 700,
-          height: 500, // Fixed height
+          height: 500,
           bgcolor: "background.paper",
           boxShadow: 24,
           p: 4,
@@ -102,9 +130,21 @@ const MenuModal: React.FC<MenuModalProps> = ({ open, handleClose }) => {
                   fontStyle: "italic",
                 }}
               >
-                Customize your drafting experience here.
+                Customize your drafting experience here. Set defaults and
+                customize!
               </Typography>
-              {/* Add your settings content here */}
+              {/* <FormControlLabel
+                control={
+                  <Switch checked={darkMode} onChange={handleDarkModeToggle} />
+                }
+                label="Dark Mode"
+              /> */}
+              <FormControlLabel
+                control={
+                  <Switch checked={showGrid} onChange={handleShowGridToggle} />
+                }
+                label="Show Grid"
+              />
             </Box>
           )}
         </Box>
