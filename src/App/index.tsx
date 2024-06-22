@@ -410,14 +410,6 @@ function Flow() {
             >
               Add Person
             </Button>
-            <Button
-              style={{ marginLeft: "5px" }}
-              variant="contained"
-              onClick={toggleShowShadowNodes} // Add this button to toggle shadow nodes
-              title="Toggle Shadow Nodes"
-            >
-              Toggle Shadow Nodes
-            </Button>
           </>
         )}
       </Panel>
