@@ -1,11 +1,7 @@
-import {
-  Panel,
-  useReactFlow,
-  getRectOfNodes,
-  getTransformForBounds,
-} from "reactflow";
+import { useReactFlow, getRectOfNodes, getTransformForBounds } from "reactflow";
 import { toPng } from "html-to-image";
 import { Button } from "@mui/material";
+import { useCallback } from "react";
 
 function downloadImage(dataUrl: string) {
   const a = document.createElement("a");
@@ -15,15 +11,26 @@ function downloadImage(dataUrl: string) {
   a.click();
 }
 
+const imageWidth: number = 1024 * 2;
+const imageHeight: number = 768 * 2;
+
 function DownloadButton(): JSX.Element {
   const { getNodes } = useReactFlow();
+
+  //Required to save svgs
+  const handleInit = useCallback(() => {
+    const viewport = document.querySelector(".react-flow__viewport");
+    const defs = document.querySelector("#defs");
+
+    if (viewport && defs) {
+      viewport.appendChild(defs.cloneNode(true));
+    }
+  }, []);
+
   const onClick = () => {
+    handleInit();
+
     const nodesBounds = getRectOfNodes(getNodes());
-
-    // Get the current window dimensions
-    const imageWidth = window.innerWidth;
-    const imageHeight = window.innerHeight;
-
     const transform = getTransformForBounds(
       nodesBounds,
       imageWidth,
