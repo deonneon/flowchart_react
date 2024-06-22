@@ -1,8 +1,11 @@
-// icon taken from grommet https://icons.grommet.io
-
 function DragIcon() {
   return (
-    <svg viewBox="0 0 24 24">
+    <svg
+      viewBox="0 0 24 24"
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+    >
       <path
         fill="#333"
         stroke="#333"
