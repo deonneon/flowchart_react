@@ -35,9 +35,8 @@ import FlowNode from "./nodegroup/FlowNode";
 import PeopleNode from "./nodegroup/PeopleNode";
 import SimpleFloatingEdge from "./edgegroup/FloatingEdge";
 
-import InstructionsModal from "./components/InstructionsModal";
+import MenuModal from "./components/MenuModal";
 import MenuIcon from "@mui/icons-material/Menu";
-import Paper from "@mui/material/Paper";
 
 const nodeTypes = {
   mindmap: MindMapNode,
@@ -311,7 +310,7 @@ function Flow() {
       connectionLineStyle={connectionLineStyle}
       fitView
     >
-      <InstructionsModal open={isModalOpen} handleClose={handleCloseModal} />
+      <MenuModal open={isModalOpen} handleClose={handleCloseModal} />
       <Controls />
       <Panel
         position="top-left"
