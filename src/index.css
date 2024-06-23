@@ -131,3 +131,7 @@ body.dark-mode .react-flow__handle {
   background-color: #444444;
   border: 1px solid #555555;
 }
+
+.react-flow__edge-path {
+  stroke: #000;
+}

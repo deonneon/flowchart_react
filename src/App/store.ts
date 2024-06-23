@@ -322,13 +322,11 @@ const useStore = createWithEqualityFn<RFState>((set, get) => ({
     set((state) => ({
       edges: state.edges.map((edge) => {
         if (edge.id === id) {
-          // Create a new object to ensure it's extensible
-          const updatedEdge = { ...edge, style: { ...edge.style } };
-          if (updatedEdge.style.strokeDasharray) {
-            delete updatedEdge.style.strokeDasharray;
-          } else {
-            updatedEdge.style.strokeDasharray = "5,5";
-          }
+          const updatedEdge = { ...edge };
+          updatedEdge.style = {
+            ...edge.style,
+            strokeDasharray: edge.style?.strokeDasharray ? undefined : "5,5",
+          };
           return updatedEdge;
         }
         return edge;
