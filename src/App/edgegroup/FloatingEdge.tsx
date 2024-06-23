@@ -110,7 +110,15 @@ function SimpleFloatingEdge({
   const markerEnd = diagramType === "flow" ? "url(#arrow)" : undefined;
 
   return (
-    <g onClick={handleEdgeClick}>
+    <g>
+      <path
+        d={edgePath}
+        fill="none"
+        stroke="transparent"
+        strokeWidth={15} // Adjust this value to increase/decrease clickable area
+        onClick={handleEdgeClick}
+        style={{ cursor: "pointer" }}
+      />
       <path
         id={id}
         className="react-flow__edge-path"
