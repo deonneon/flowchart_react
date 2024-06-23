@@ -169,17 +169,16 @@ function Flow() {
       }
       connectingNodeId.current = null;
     },
-    [getChildNodePosition, addChildNode, addShadowNode, showShadowNodes] // Add showShadowNodes as a dependency
+    [getChildNodePosition, addChildNode, addShadowNode, showShadowNodes]
   );
 
   const onNodeClick: NodeMouseHandler = useCallback(
     (_, node) => {
       if (node.type === "shadow" && showShadowNodes) {
-        // Check if shadow nodes should be converted
         convertShadowNode(node.id);
       }
     },
-    [convertShadowNode, showShadowNodes] // Add showShadowNodes as a dependency
+    [convertShadowNode, showShadowNodes]
   );
 
   useEffect(() => {
@@ -226,7 +225,7 @@ function Flow() {
         className="header"
         style={{ display: "flex", alignItems: "center" }}
       >
-        <TopRightPanel />
+        <TopRightPanel showGrid={showGrid} setShowGrid={setShowGrid} />
       </Panel>
       <BottomToolbar />
       <DiagramTypeSwitcher nodes={nodes} setCenter={setCenter} />
