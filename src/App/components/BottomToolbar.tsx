@@ -11,6 +11,8 @@ import useStore from "../store";
 import ColorPalette from "./ColorPalette";
 import PowerInputIcon from "@mui/icons-material/PowerInput";
 import BorderStyleIcon from "@mui/icons-material/BorderStyle";
+import UndoIcon from "@mui/icons-material/Undo";
+import RedoIcon from "@mui/icons-material/Redo";
 
 const BottomToolbar: React.FC = () => {
   const {
@@ -19,6 +21,10 @@ const BottomToolbar: React.FC = () => {
     nodes,
     updateBoundingBoxStyle,
     updateBoundingBoxRadius,
+    undo,
+    redo,
+    canUndo,
+    canRedo,
   } = useStore();
 
   const saveToJson = () => {
@@ -73,6 +79,12 @@ const BottomToolbar: React.FC = () => {
       if ((event.ctrlKey || event.metaKey) && event.key === "s") {
         event.preventDefault();
         saveToLocal();
+      } else if ((event.ctrlKey || event.metaKey) && event.key === "z") {
+        event.preventDefault();
+        undo();
+      } else if ((event.ctrlKey || event.metaKey) && event.key === "y") {
+        event.preventDefault();
+        redo();
       }
     };
 
@@ -81,7 +93,7 @@ const BottomToolbar: React.FC = () => {
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, []);
+  }, [undo, redo]);
 
   const inactiveStyle = { marginRight: "5px", padding: "10px" };
   const activeStyle = { backgroundColor: "#4CAF50", color: "white" };
@@ -193,6 +205,12 @@ const BottomToolbar: React.FC = () => {
         </button>
       </div>
       <ColorPalette />
+      {/* <button onClick={undo} disabled={!canUndo} title="Undo (Ctrl+Z)">
+        <UndoIcon />
+      </button>
+      <button onClick={redo} disabled={!canRedo} title="Redo (Ctrl+Y)">
+        <RedoIcon />
+      </button> */}
       {selectedNode && selectedNode.type === "boundingbox" && (
         <div
           style={{
