@@ -5,7 +5,12 @@ import DownloadButton from "./DownloadButton";
 import MenuModal from "./MenuModal";
 import useStore from "../store";
 
-const TopRightPanel = () => {
+interface TopRightPanelProps {
+  showGrid: boolean;
+  setShowGrid: (show: boolean) => void;
+}
+
+const TopRightPanel = ({ showGrid, setShowGrid }: TopRightPanelProps) => {
   const {
     diagramType,
     addEmptyNode,
@@ -23,7 +28,6 @@ const TopRightPanel = () => {
   }));
 
   const [isModalOpen, setModalOpen] = useState(false);
-  const [showGrid, setShowGrid] = useState(true);
   const showShadowNodes = useStore((state) => state.showShadowNodes);
   const toggleShowShadowNodes = useStore(
     (state) => state.toggleShowShadowNodes

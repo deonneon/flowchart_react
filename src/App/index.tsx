@@ -93,10 +93,12 @@ function Flow() {
   useEffect(() => {
     if (diagramType === "mindmap") {
       setSelectedNodeId("mindmap-root");
+      setCenter(0, 0);
     } else if (diagramType === "flow") {
       setSelectedNodeId("flow-root");
+      setCenter(200, 0);
     }
-  }, [diagramType, setSelectedNodeId]);
+  }, [diagramType, setSelectedNodeId, setCenter]);
 
   const connectionLineStyle = {
     stroke: diagramType === "mindmap" ? "#F6AD55" : "#000000",
@@ -169,17 +171,16 @@ function Flow() {
       }
       connectingNodeId.current = null;
     },
-    [getChildNodePosition, addChildNode, addShadowNode, showShadowNodes] // Add showShadowNodes as a dependency
+    [getChildNodePosition, addChildNode, addShadowNode, showShadowNodes]
   );
 
   const onNodeClick: NodeMouseHandler = useCallback(
     (_, node) => {
       if (node.type === "shadow" && showShadowNodes) {
-        // Check if shadow nodes should be converted
         convertShadowNode(node.id);
       }
     },
-    [convertShadowNode, showShadowNodes] // Add showShadowNodes as a dependency
+    [convertShadowNode, showShadowNodes]
   );
 
   useEffect(() => {
@@ -218,7 +219,7 @@ function Flow() {
       nodeOrigin={nodeOrigin}
       defaultEdgeOptions={defaultEdgeOptions}
       connectionLineStyle={connectionLineStyle}
-      fitView
+      // fitView
     >
       <Controls />
       <Panel
@@ -226,7 +227,7 @@ function Flow() {
         className="header"
         style={{ display: "flex", alignItems: "center" }}
       >
-        <TopRightPanel />
+        <TopRightPanel showGrid={showGrid} setShowGrid={setShowGrid} />
       </Panel>
       <BottomToolbar />
       <DiagramTypeSwitcher nodes={nodes} setCenter={setCenter} />
