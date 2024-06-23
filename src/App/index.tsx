@@ -93,10 +93,12 @@ function Flow() {
   useEffect(() => {
     if (diagramType === "mindmap") {
       setSelectedNodeId("mindmap-root");
+      setCenter(0, 0);
     } else if (diagramType === "flow") {
       setSelectedNodeId("flow-root");
+      setCenter(200, 0);
     }
-  }, [diagramType, setSelectedNodeId]);
+  }, [diagramType, setSelectedNodeId, setCenter]);
 
   const connectionLineStyle = {
     stroke: diagramType === "mindmap" ? "#F6AD55" : "#000000",
@@ -217,7 +219,7 @@ function Flow() {
       nodeOrigin={nodeOrigin}
       defaultEdgeOptions={defaultEdgeOptions}
       connectionLineStyle={connectionLineStyle}
-      fitView
+      // fitView
     >
       <Controls />
       <Panel
