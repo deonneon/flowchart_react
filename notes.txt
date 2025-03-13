@@ -1,1 +1,2 @@
 change pointer cursor for mode toggle. right now it doesn't indicate clickable. 
+

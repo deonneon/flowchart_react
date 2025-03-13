@@ -51,6 +51,13 @@ npm run dev
 npm run build
 ```
 
+### Package
+
+```sh
+npm run electron-start
+npm run package
+```
+
 ## Technologies
 
 React: UI library for building interactive UIs.
