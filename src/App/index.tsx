@@ -51,7 +51,7 @@ const edgeTypes = {
   flowmap: SimpleFloatingEdge,
 };
 
-const nodeOrigin: NodeOrigin = [0.5, 0.5];
+const nodeOrigin: NodeOrigin = [0, 0];
 
 function Flow() {
   const store = useStoreApi();
