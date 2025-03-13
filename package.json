@@ -1,12 +1,35 @@
 {
-  "name": "react-flow-mindmap-app",
+  "name": "thoughtmapper",
   "private": true,
   "version": "0.0.0",
-  "type": "module",
+  "main": "main.js",
+  "type": "commonjs",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "electron": "electron .",
+    "electron-start": "npm run build && electron .",
+    "package": "electron-builder --win portable"
+  },
+  "build": {
+    "appId": "com.self.deon",
+    "productName": "ThoughtMapper",
+    "files": [
+      "dist/**/*",
+      "main.js",
+      "preload.js",
+      "!**/node_modules/**/*"
+    ],
+    "directories": {
+      "buildResources": "assets",
+      "output": "release"
+    },
+    "win": {
+      "target": "portable"
+    },
+    "asar": true,
+    "asarUnpack": []
   },
   "dependencies": {
     "@emotion/react": "^11.11.4",
@@ -31,6 +54,8 @@
     "@types/react": "^18.0.26",
     "@types/react-dom": "^18.0.9",
     "@vitejs/plugin-react": "^3.0.0",
+    "electron": "^35.0.1",
+    "electron-builder": "^25.1.8",
     "typescript": "^4.9.3",
     "vite": "^4.0.0"
   }
