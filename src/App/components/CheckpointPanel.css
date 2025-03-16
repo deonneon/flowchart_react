@@ -1,5 +1,5 @@
 .checkpoint-panel {
-  padding-top: 60px;
+  padding: 10px;
 }
 
 .checkpoint-card {
@@ -114,7 +114,8 @@
   top: 0;
   right: 0;
   width: 250px;
-  height: 100vh;
+  margin-top: 70px;
+  height: 75vh;
   background-color: white;
   border-left: 1px solid #e0e0e0;
   display: flex;
