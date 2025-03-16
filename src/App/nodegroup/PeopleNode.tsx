@@ -53,34 +53,35 @@ const PeopleNode = ({ id, data }: NodeProps<NodeData>) => {
         borderRadius: "5px",
         display: "flex",
         flexDirection: "column",
-        alignItems: "center",
+        // alignItems: "center",
       }}
     >
-      <div className="inputWrapper">
-        <div className="dragHandle">
-          <DragIcon />
-        </div>
-        <input
-          value={data.label}
-          onChange={(evt) => updateNodeLabel(id, evt.target.value)}
-          className="input"
-          ref={inputRef}
-          style={{
-            textAlign: "center",
-            marginBottom: "5px",
-            border: "none",
-            fontWeight: "bold",
-            width: "100%",
-          }}
-        />
-      </div>
-
       {/* Toolbar with Delete Button */}
       {(selected || isHovered) && (
         <WidgetToolbar id={id} onDelete={deleteNode} />
       )}
 
-      <BoyIcon fontSize="large" sx={{ color: data.color || "black" }} />
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+        <div className="inputWrapper">
+          <div className="dragHandle">
+            <DragIcon />
+          </div>
+          <input
+            value={data.label}
+            onChange={(evt) => updateNodeLabel(id, evt.target.value)}
+            className="input"
+            ref={inputRef}
+            style={{
+              textAlign: "center",
+              marginBottom: "5px",
+              border: "none",
+              fontWeight: "bold",
+              width: "100%",
+            }}
+          />
+        </div>
+        <BoyIcon fontSize="large" sx={{ color: data.color || "black" }} />
+      </div>
       <Handle type="target" position={Position.Top} isConnectable={true} />
       <Handle
         type="source"

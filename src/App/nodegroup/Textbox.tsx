@@ -51,9 +51,6 @@ const TextBoxNode = ({ id, data }: NodeProps<NodeData>) => {
 
   return (
     <div
-      style={{
-        padding: "5px",
-      }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onClick={() => setSelectedNodeId(id)}
