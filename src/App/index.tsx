@@ -162,8 +162,8 @@ function Flow() {
           if (showShadowNodes) {
             // Check if shadow nodes should be added
             const shadowPosition = {
-              x: childNodePosition.x + 20,
-              y: childNodePosition.y,
+              x: parentNode?.width ? parentNode.width + 30 : 100,
+              y: 0,
             };
             addShadowNode(newNodeId, shadowPosition);
           }
