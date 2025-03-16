@@ -1,4 +1,4 @@
-import { memo } from "react";
+import { memo, useState } from "react";
 import { NodeProps, Position, NodeResizeControl } from "reactflow";
 import useStore from "../store";
 import DragIcon from "./DragIcon";
@@ -39,9 +39,13 @@ function ResizeIcon() {
 }
 
 
-const BoundingBoxNode = ({ id, data, selected }: NodeProps<NodeData>) => {
+const BoundingBoxNode = ({ id, data }: NodeProps<NodeData>) => {
   const deleteNode = useStore((state) => state.deleteNode);
   const setSelectedNodeId = useStore((state) => state.setSelectedNodeId);
+  const selectedNodeId = useStore((state) => state.selectedNodeId);
+  const [isHovered, setIsHovered] = useState(false);
+
+  const selected = selectedNodeId === id;
 
   return (
     <div
@@ -53,7 +57,12 @@ const BoundingBoxNode = ({ id, data, selected }: NodeProps<NodeData>) => {
         cursor: "default",
         position: "relative",
       }}
-      onClick={() => setSelectedNodeId(id)}
+      onClick={(e) => {
+        e.stopPropagation();
+        setSelectedNodeId(id);
+      }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
       {/* Drag Handle */}
       <div className="inputWrapper" style={{ cursor: "grab", position: "relative" }}>
@@ -62,7 +71,7 @@ const BoundingBoxNode = ({ id, data, selected }: NodeProps<NodeData>) => {
         </div>
 
         {/* Toolbar with Delete Button */}
-        {selected && (
+        {(selected || isHovered) && (
           <WidgetToolbar id={id} onDelete={deleteNode} />
         )}
       </div>

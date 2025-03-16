@@ -39,13 +39,27 @@ function FlowNode({ id, data }: NodeProps<NodeData>) {
       }
     };
 
+    // Add canvas click handler to unselect the node
+    const handleCanvasClick = (event: MouseEvent) => {
+      // Only unselect if we're clicking directly on the canvas/pane
+      // and not on a node or other UI element
+      const target = event.target as HTMLElement;
+      if (target.classList.contains('react-flow__pane')) {
+        setSelectedNodeId(null);
+      }
+    };
+
     const inputElement = inputRef.current;
     inputElement?.addEventListener("keydown", handleKeyDown);
+    
+    // Add event listener to the document or canvas
+    document.addEventListener('click', handleCanvasClick);
 
     return () => {
       inputElement?.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener('click', handleCanvasClick);
     };
-  }, []);
+  }, [setSelectedNodeId]);
 
   const selected = selectedNodeId === id;
 
@@ -53,10 +67,12 @@ function FlowNode({ id, data }: NodeProps<NodeData>) {
     <div
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      onClick={() => setSelectedNodeId(id)}
+      onClick={(e) => {
+        e.stopPropagation();
+        setSelectedNodeId(id);
+      }}
       style={{ 
         backgroundColor: data.color,
-        // position: "relative"
       }}
     >
       <div className="inputWrapper">
