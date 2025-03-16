@@ -1,16 +1,25 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Button } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import DownloadButton from "./DownloadButton";
 import MenuModal from "./MenuModal";
 import useStore from "../store";
+import BookmarkIcon from "@mui/icons-material/Bookmark";
+import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 
-interface TopRightPanelProps {
+export interface TopRightPanelProps {
   showGrid: boolean;
-  setShowGrid: (show: boolean) => void;
+  setShowGrid: React.Dispatch<React.SetStateAction<boolean>>;
+  showCheckpoints?: boolean;
+  toggleCheckpoints?: () => void;
 }
 
-const TopRightPanel = ({ showGrid, setShowGrid }: TopRightPanelProps) => {
+const TopRightPanel: React.FC<TopRightPanelProps> = ({ 
+  showGrid, 
+  setShowGrid, 
+  showCheckpoints = true, 
+  toggleCheckpoints 
+}) => {
   const {
     diagramType,
     addEmptyNode,
@@ -96,13 +105,24 @@ const TopRightPanel = ({ showGrid, setShowGrid }: TopRightPanelProps) => {
           </Button>
         </>
       )}
+      {toggleCheckpoints && (
+        <Button
+          style={{ marginLeft: "5px" }}
+          variant="contained"
+          onClick={toggleCheckpoints}
+          title={showCheckpoints ? "Hide Checkpoints" : "Show Checkpoints"}
+          startIcon={showCheckpoints ? <BookmarkIcon /> : <BookmarkBorderIcon />}
+        >
+          {showCheckpoints ? "Hide Checkpoints" : "Show Checkpoints"}
+        </Button>
+      )}
       <MenuModal
         open={isModalOpen}
-        handleClose={handleCloseModal}
-        showGrid={showGrid}
-        setShowGrid={setShowGrid}
+        onClose={handleCloseModal}
         showShadowNodes={showShadowNodes}
         toggleShowShadowNodes={toggleShowShadowNodes}
+        showGrid={showGrid}
+        setShowGrid={setShowGrid}
       />
     </div>
   );

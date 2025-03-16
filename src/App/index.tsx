@@ -35,6 +35,8 @@ import SimpleFloatingEdge from "./edgegroup/FloatingEdge";
 import ShadowNode from "./nodegroup/ShadowNode";
 import TopRightPanel from "./components/TopRightPanel";
 import SvgDefinitions from "./components/SvgDefinitions";
+import Sidebar from "./components/Sidebar";
+import CheckpointPanel from "./components/CheckpointPanel";
 
 const nodeTypes = {
   mindmap: MindMapNode,
@@ -89,6 +91,53 @@ function Flow() {
   const { project, setCenter } = useReactFlow();
   const connectingNodeId = useRef<string | null>(null);
   const [showGrid, setShowGrid] = useState(true);
+  const [showCheckpoints, setShowCheckpoints] = useState(true);
+
+  // Load checkpoints from localStorage on component mount
+  useEffect(() => {
+    const loadCheckpointsFromStorage = () => {
+      const checkpointKeys = Object.keys(localStorage).filter(key => 
+        key.startsWith('flowchart_checkpoint_')
+      );
+      
+      if (checkpointKeys.length > 0) {
+        const loadedCheckpoints = checkpointKeys.map(key => {
+          const id = key.replace('flowchart_checkpoint_', '');
+          let name = `Checkpoint ${id.substring(0, 4)}`;
+          let timestamp = Date.now();
+          let preview: string | undefined;
+          
+          // Try to load full checkpoint data
+          try {
+            const data = localStorage.getItem(key);
+            if (data) {
+              const parsed = JSON.parse(data);
+              
+              // Extract metadata
+              if (parsed.name) name = parsed.name;
+              if (parsed.timestamp) timestamp = parsed.timestamp;
+              if (parsed.preview) preview = parsed.preview;
+            }
+          } catch (error) {
+            console.error("Error loading checkpoint data:", error);
+          }
+          
+          return {
+            id,
+            name,
+            timestamp,
+            preview
+          };
+        });
+        
+        // Sort by most recent first and update state
+        loadedCheckpoints.sort((a, b) => b.timestamp - a.timestamp);
+        useStore.setState({ checkpoints: loadedCheckpoints });
+      }
+    };
+    
+    loadCheckpointsFromStorage();
+  }, []);
 
   useEffect(() => {
     if (diagramType === "mindmap") {
@@ -205,6 +254,10 @@ function Flow() {
     };
   }, [deleteNode, selectedNodeId]);
 
+  const toggleCheckpoints = () => {
+    setShowCheckpoints(!showCheckpoints);
+  };
+
   return (
     <ReactFlow
       nodes={nodes}
@@ -221,13 +274,20 @@ function Flow() {
       connectionLineStyle={connectionLineStyle}
       // fitView
     >
+      <Sidebar />
+      {showCheckpoints && <CheckpointPanel />}
       <Controls />
       <Panel
         position="top-left"
         className="header"
         style={{ display: "flex", alignItems: "center" }}
       >
-        <TopRightPanel showGrid={showGrid} setShowGrid={setShowGrid} />
+        <TopRightPanel 
+          showGrid={showGrid} 
+          setShowGrid={setShowGrid} 
+          showCheckpoints={showCheckpoints}
+          toggleCheckpoints={toggleCheckpoints}
+        />
       </Panel>
       <BottomToolbar />
       <DiagramTypeSwitcher nodes={nodes} setCenter={setCenter} />
