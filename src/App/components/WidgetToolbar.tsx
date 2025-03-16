@@ -34,7 +34,7 @@ const WidgetToolbar: React.FC<WidgetToolbarProps> = ({ id, onDelete }) => {
     <div
       style={{
         position: "absolute",
-        top: "-20px",
+        top: "-22px",
         display: "flex",
         background: "rgba(255, 255, 255, 0.8)",
         padding: "1px",
