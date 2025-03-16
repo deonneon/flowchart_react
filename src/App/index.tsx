@@ -88,7 +88,7 @@ function Flow() {
     }),
     shallow
   );
-  const { project, setCenter } = useReactFlow();
+  const { screenToFlowPosition, setCenter } = useReactFlow();
   const connectingNodeId = useRef<string | null>(null);
   const [showGrid, setShowGrid] = useState(true);
   const [showCheckpoints, setShowCheckpoints] = useState(true);
@@ -175,7 +175,7 @@ function Flow() {
     const { top, left } = domNode.getBoundingClientRect();
 
     // we need to remove the wrapper bounds, in order to get the correct mouse position
-    const panePosition = project({
+    const panePosition = screenToFlowPosition({
       x: event.clientX - left,
       y: event.clientY - top,
     });

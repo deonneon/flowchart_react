@@ -141,13 +141,13 @@ const Sidebar = () => {
     <div 
       className="sidebar" 
       style={{ 
-        width: isExpanded ? "300px" : "50px", 
-        marginTop: "60px",
-        height: "85vh", 
+        width: isExpanded ? "300px" : "30px", 
+        marginTop: "70px",
+        height: isExpanded ? "100vh" : "30vh", 
         backgroundColor: "rgba(255, 255, 255, 0.5)", 
         borderRight: "1px solid #e0e0e0",
         boxShadow: "0 0 10px 0 rgba(0, 0, 0, 0.1)",
-        borderRadius: "10px",
+        borderRadius: "0 5px 5px 0",
         transition: "width 0.3s ease",
         overflow: "hidden",
         position: "relative",
