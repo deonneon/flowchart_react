@@ -293,13 +293,16 @@ const useStore = createWithEqualityFn<RFState>((set, get) => ({
     const { copiedNodeId, nodes, diagramType } = get();
     const nodeToClone = nodes.find((node) => node.id === copiedNodeId);
     if (nodeToClone) {
+      // Calculate the height of the node (default to 40 if not available)
+      const nodeHeight = nodeToClone.height || 40;
+      
       const newNode = {
         id: nanoid(),
         type: nodeToClone.type,
         data: { label: `Clone of ${nodeToClone.data.label}` }, // Create a new data object
         position: {
-          x: nodeToClone.position.x + 1,
-          y: nodeToClone.position.y + 1,
+          x: nodeToClone.position.x,
+          y: nodeToClone.position.y + nodeHeight + 20, // Offset by height + 20px
         },
         dragHandle: ".dragHandle",
       };

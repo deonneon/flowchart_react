@@ -41,7 +41,7 @@ const WidgetToolbar: React.FC<WidgetToolbarProps> = ({ id, onDelete }) => {
         borderRadius: "4px",
         boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.2)",
         pointerEvents: "auto",
-        zIndex: 10,
+        zIndex: 100,
       }}
       onMouseDown={(event) => event.stopPropagation()}
     >
