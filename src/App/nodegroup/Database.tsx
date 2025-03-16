@@ -2,6 +2,7 @@ import { useLayoutEffect, useEffect, useRef, useState } from "react";
 import { Handle, NodeProps, Position } from "reactflow";
 import useStore from "../store";
 import DragIcon from "./DragIcon";
+import WidgetToolbar from "../components/WidgetToolbar";
 
 export type NodeData = {
   label: string;
@@ -14,6 +15,7 @@ function DatabaseNode({ id, data }: NodeProps<NodeData>) {
   const updateNodeLabel = useStore((state) => state.updateNodeLabel);
   const deleteNode = useStore((state) => state.deleteNode);
   const setSelectedNodeId = useStore((state) => state.setSelectedNodeId);
+  const selectedNodeId = useStore((state) => state.selectedNodeId);
 
   const [isHovered, setIsHovered] = useState(false);
 
@@ -45,6 +47,8 @@ function DatabaseNode({ id, data }: NodeProps<NodeData>) {
     };
   }, []);
 
+  const selected = selectedNodeId === id;
+
   return (
     <div
       onMouseEnter={() => setIsHovered(true)}
@@ -52,6 +56,7 @@ function DatabaseNode({ id, data }: NodeProps<NodeData>) {
       onClick={() => setSelectedNodeId(id)}
       style={{
         backgroundColor: "transparent",
+        position: "relative",
       }}
     >
       <div className="inputWrapper">
@@ -65,6 +70,12 @@ function DatabaseNode({ id, data }: NodeProps<NodeData>) {
           ref={inputRef}
         />
       </div>
+      
+      {/* Toolbar with Delete Button */}
+      {(selected || isHovered) && (
+        <WidgetToolbar id={id} onDelete={deleteNode} />
+      )}
+      
       <svg
         xmlns="http://www.w3.org/2000/svg"
         xmlnsXlink="http://www.w3.org/1999/xlink"
@@ -131,23 +142,6 @@ function DatabaseNode({ id, data }: NodeProps<NodeData>) {
         style={{ backgroundColor: "transparent" }}
         isConnectable={true}
       />
-      {isHovered && (
-        <div>
-          <button
-            style={{
-              position: "absolute",
-              borderRadius: "50%",
-              backgroundColor: "pink",
-              border: "0px",
-              right: 0,
-              bottom: 0,
-            }}
-            onClick={() => deleteNode(id)}
-          >
-            -
-          </button>
-        </div>
-      )}
     </div>
   );
 }

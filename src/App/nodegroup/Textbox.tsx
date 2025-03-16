@@ -2,6 +2,7 @@ import { useLayoutEffect, useEffect, useRef, useState } from "react";
 import { Handle, NodeProps, Position } from "reactflow";
 import useStore from "../store";
 import DragIcon from "./DragIcon";
+import WidgetToolbar from "../components/WidgetToolbar";
 
 export type NodeData = {
   label: string;
@@ -14,6 +15,7 @@ const TextBoxNode = ({ id, data }: NodeProps<NodeData>) => {
   const updateNodeLabel = useStore((state) => state.updateNodeLabel);
   const deleteNode = useStore((state) => state.deleteNode);
   const setSelectedNodeId = useStore((state) => state.setSelectedNodeId);
+  const selectedNodeId = useStore((state) => state.selectedNodeId);
 
   const [isHovered, setIsHovered] = useState(false);
 
@@ -45,6 +47,8 @@ const TextBoxNode = ({ id, data }: NodeProps<NodeData>) => {
     };
   }, []);
 
+  const selected = selectedNodeId === id;
+
   return (
     <div
       style={{
@@ -57,23 +61,6 @@ const TextBoxNode = ({ id, data }: NodeProps<NodeData>) => {
       <div className="inputWrapper">
         <div className="dragHandle">
           <DragIcon />
-          {isHovered && (
-            <div>
-              <button
-                style={{
-                  position: "absolute",
-                  borderRadius: "50%",
-                  backgroundColor: "pink",
-                  border: "0px",
-                  right: -17,
-                  bottom: -15,
-                }}
-                onClick={() => deleteNode(id)}
-              >
-                -
-              </button>
-            </div>
-          )}
         </div>
         <input
           value={data.label}
@@ -82,6 +69,11 @@ const TextBoxNode = ({ id, data }: NodeProps<NodeData>) => {
           ref={inputRef}
         />
       </div>
+
+      {/* Toolbar with Delete Button */}
+      {(selected || isHovered) && (
+        <WidgetToolbar id={id} onDelete={deleteNode} />
+      )}
 
       <Handle
         type="target"

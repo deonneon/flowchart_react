@@ -3,6 +3,7 @@ import { Handle, NodeProps, Position } from "reactflow";
 import useStore from "../store";
 import DragIcon from "./DragIcon";
 import BoyIcon from "@mui/icons-material/Boy";
+import WidgetToolbar from "../components/WidgetToolbar";
 
 export type NodeData = {
   label: string;
@@ -15,6 +16,7 @@ const PeopleNode = ({ id, data }: NodeProps<NodeData>) => {
   const updateNodeLabel = useStore((state) => state.updateNodeLabel);
   const deleteNode = useStore((state) => state.deleteNode);
   const setSelectedNodeId = useStore((state) => state.setSelectedNodeId);
+  const selectedNodeId = useStore((state) => state.selectedNodeId);
 
   const [isHovered, setIsHovered] = useState(false);
 
@@ -39,6 +41,8 @@ const PeopleNode = ({ id, data }: NodeProps<NodeData>) => {
       inputElement?.removeEventListener("keydown", handleKeyDown);
     };
   }, []);
+
+  const selected = selectedNodeId === id;
 
   return (
     <div
@@ -70,6 +74,11 @@ const PeopleNode = ({ id, data }: NodeProps<NodeData>) => {
           }}
         />
       </div>
+
+      {/* Toolbar with Delete Button */}
+      {(selected || isHovered) && (
+        <WidgetToolbar id={id} onDelete={deleteNode} />
+      )}
 
       <BoyIcon fontSize="large" sx={{ color: data.color || "black" }} />
       <Handle type="target" position={Position.Top} isConnectable={true} />
