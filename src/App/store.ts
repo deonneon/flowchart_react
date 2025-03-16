@@ -505,10 +505,63 @@ const useStore = createWithEqualityFn<RFState>((set, get) => ({
       edges: deepCopy(edges)
     };
     
+    // Save initial data without preview
     localStorage.setItem(diagramId, JSON.stringify(diagramData));
     
-    // Dispatch a custom event to notify components that a diagram was saved
-    window.dispatchEvent(new CustomEvent('diagramSaved'));
+    // Generate preview image
+    try {
+      const viewport = document.querySelector(".react-flow__viewport") as HTMLElement;
+      
+      if (viewport) {
+        // Define preview dimensions
+        const previewWidth = 200;
+        const previewHeight = 150;
+        
+        // Get the bounds of all nodes to ensure we capture the entire diagram
+        const nodesBounds = getRectOfNodes(nodes);
+        const transform = getTransformForBounds(
+          nodesBounds,
+          previewWidth * 4,
+          previewHeight * 4,
+          0.5,
+          2
+        );
+        
+        // Generate the preview image
+        toPng(viewport, {
+          backgroundColor: "white",
+          width: previewWidth * 4,
+          height: previewHeight * 4,
+          style: {
+            transform: `translate(${transform[0]}px, ${transform[1]}px) scale(${transform[2]})`,
+          },
+          pixelRatio: 1,
+          quality: 0.5,
+          canvasWidth: previewWidth,
+          canvasHeight: previewHeight
+        }).then(dataUrl => {
+          // Update the diagram data with the preview
+          const updatedData = { ...diagramData, preview: dataUrl };
+          
+          // Update in localStorage
+          localStorage.setItem(diagramId, JSON.stringify(updatedData));
+          
+          // Dispatch a custom event to notify components that a diagram was saved
+          window.dispatchEvent(new CustomEvent('diagramSaved'));
+        }).catch(error => {
+          console.error("Error generating diagram preview:", error);
+          // Still dispatch the event even if preview generation fails
+          window.dispatchEvent(new CustomEvent('diagramSaved'));
+        });
+      } else {
+        // If viewport not found, still dispatch the event
+        window.dispatchEvent(new CustomEvent('diagramSaved'));
+      }
+    } catch (error) {
+      console.error("Error in diagram preview generation:", error);
+      // Still dispatch the event even if preview generation fails
+      window.dispatchEvent(new CustomEvent('diagramSaved'));
+    }
     
     toast.success(`Diagram "${name}" saved!`);
     return diagramId;
