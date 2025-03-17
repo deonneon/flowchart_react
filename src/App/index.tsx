@@ -180,10 +180,9 @@ function Flow() {
       y: event.clientY - top,
     });
 
-    // we are calculating with positionAbsolute here because child nodes are positioned relative to their parent
     return {
-      x: panePosition.x - parentNode.positionAbsolute.x + parentNode.width / 2,
-      y: panePosition.y - parentNode.positionAbsolute.y + parentNode.height / 2,
+      x: panePosition.x - parentNode.positionAbsolute.x + parentNode.width / 2 - parentNode.width,
+      y: panePosition.y - parentNode.positionAbsolute.y + parentNode.height / 2 - parentNode.height,
     };
   };
 
@@ -270,6 +269,8 @@ function Flow() {
       nodeTypes={nodeTypes}
       edgeTypes={edgeTypes}
       nodeOrigin={nodeOrigin}
+      snapToGrid={true}
+      snapGrid={[1, 1]}
       defaultEdgeOptions={defaultEdgeOptions}
       connectionLineStyle={connectionLineStyle}
       // fitView
