@@ -91,7 +91,7 @@ function Flow() {
   const { screenToFlowPosition, setCenter } = useReactFlow();
   const connectingNodeId = useRef<string | null>(null);
   const [showGrid, setShowGrid] = useState(true);
-  const [showCheckpoints, setShowCheckpoints] = useState(true);
+  const [showCheckpoints, setShowCheckpoints] = useState(false);
 
   // Load checkpoints from localStorage on component mount
   useEffect(() => {
