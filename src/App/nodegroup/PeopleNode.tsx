@@ -3,6 +3,7 @@ import { Handle, NodeProps, Position } from "reactflow";
 import useStore from "../store";
 import DragIcon from "./DragIcon";
 import BoyIcon from "@mui/icons-material/Boy";
+import WidgetToolbar from "../components/WidgetToolbar";
 
 export type NodeData = {
   label: string;
@@ -15,6 +16,7 @@ const PeopleNode = ({ id, data }: NodeProps<NodeData>) => {
   const updateNodeLabel = useStore((state) => state.updateNodeLabel);
   const deleteNode = useStore((state) => state.deleteNode);
   const setSelectedNodeId = useStore((state) => state.setSelectedNodeId);
+  const selectedNodeId = useStore((state) => state.selectedNodeId);
 
   const [isHovered, setIsHovered] = useState(false);
 
@@ -40,6 +42,8 @@ const PeopleNode = ({ id, data }: NodeProps<NodeData>) => {
     };
   }, []);
 
+  const selected = selectedNodeId === id;
+
   return (
     <div
       onMouseEnter={() => setIsHovered(true)}
@@ -49,29 +53,35 @@ const PeopleNode = ({ id, data }: NodeProps<NodeData>) => {
         borderRadius: "5px",
         display: "flex",
         flexDirection: "column",
-        alignItems: "center",
+        // alignItems: "center",
       }}
     >
-      <div className="inputWrapper">
-        <div className="dragHandle">
-          <DragIcon />
-        </div>
-        <input
-          value={data.label}
-          onChange={(evt) => updateNodeLabel(id, evt.target.value)}
-          className="input"
-          ref={inputRef}
-          style={{
-            textAlign: "center",
-            marginBottom: "5px",
-            border: "none",
-            fontWeight: "bold",
-            width: "100%",
-          }}
-        />
-      </div>
+      {/* Toolbar with Delete Button */}
+      {(selected || isHovered) && (
+        <WidgetToolbar id={id} onDelete={deleteNode} />
+      )}
 
-      <BoyIcon fontSize="large" sx={{ color: data.color || "black" }} />
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+        <div className="inputWrapper">
+          <div className="dragHandle">
+            <DragIcon />
+          </div>
+          <input
+            value={data.label}
+            onChange={(evt) => updateNodeLabel(id, evt.target.value)}
+            className="input"
+            ref={inputRef}
+            style={{
+              textAlign: "center",
+              marginBottom: "5px",
+              border: "none",
+              fontWeight: "bold",
+              width: "100%",
+            }}
+          />
+        </div>
+        <BoyIcon fontSize="large" sx={{ color: data.color || "black" }} />
+      </div>
       <Handle type="target" position={Position.Top} isConnectable={true} />
       <Handle
         type="source"

@@ -1,187 +1,122 @@
-import { useState } from "react";
+import React from "react";
 import {
-  Modal,
-  Box,
-  Typography,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
   Button,
-  Stack,
-  Tabs,
-  Tab,
-  Switch,
   FormControlLabel,
+  Switch,
 } from "@mui/material";
-import FileCopyIcon from "@mui/icons-material/FileCopy";
-import PaletteIcon from "@mui/icons-material/Palette";
 
-interface MenuModalProps {
+export interface MenuModalProps {
   open: boolean;
-  handleClose: () => void;
-  showGrid: boolean;
-  setShowGrid: (show: boolean) => void;
+  onClose: () => void;
   showShadowNodes: boolean;
   toggleShowShadowNodes: () => void;
+  showGrid: boolean;
+  setShowGrid: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const MenuModal: React.FC<MenuModalProps> = ({
   open,
-  handleClose,
-  showGrid,
-  setShowGrid,
+  onClose,
   showShadowNodes,
   toggleShowShadowNodes,
+  showGrid,
+  setShowGrid,
 }) => {
-  const [activeTab, setActiveTab] = useState(0);
-  const [darkMode, setDarkMode] = useState(false);
-  const [defaultNodeColor, setDefaultNodeColor] = useState("#3498db");
-
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
-    setActiveTab(newValue);
-  };
-
-  const applyDarkMode = (enabled: boolean) => {
-    if (enabled) {
-      document.body.classList.add("dark-mode");
-    } else {
-      document.body.classList.remove("dark-mode");
-    }
-  };
-
-  const handleDarkModeToggle = () => {
-    setDarkMode(!darkMode);
-    applyDarkMode(!darkMode);
-  };
-
   const handleShowGridToggle = () => {
     setShowGrid(!showGrid);
   };
 
   return (
-    <Modal
-      open={open}
-      onClose={handleClose}
-      aria-labelledby="instructions-modal-title"
-      aria-describedby="instructions-modal-description"
-    >
-      <Box
-        sx={{
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          width: 700,
-          height: 500,
-          bgcolor: "background.paper",
-          boxShadow: 24,
-          p: 4,
-          borderRadius: "15px",
-          border: "2px solid green",
-          display: "flex",
-          fontFamily: "'Comic Sans MS', cursive, sans-serif",
-        }}
-      >
-        <Box sx={{ borderRight: 1, borderColor: "divider", pr: 2 }}>
-          <Tabs
-            orientation="vertical"
-            value={activeTab}
-            onChange={handleTabChange}
-            aria-label="Menu tabs"
-          >
-            <Tab label="Instructions" />
-            <Tab label="Settings" />
-          </Tabs>
-        </Box>
-        <Box sx={{ flexGrow: 1, pl: 2, overflowY: "auto" }}>
-          {activeTab === 0 && (
-            <Box sx={{ height: "100%", overflowY: "auto" }}>
-              <Typography
-                variant="body1"
-                sx={{
-                  textAlign: "center",
-                  color: "#333",
-                  mb: 3,
-                  fontStyle: "italic",
-                  padding: "10px",
-                }}
-              >
-                Welcome to the Ultimate Drafting Playground! 🎉 This app is
-                designed to make your drafting process a breeze. Add nodes,
-                connect them, and let your creativity flow effortlessly!
-              </Typography>
-              <Stack>
-                <Box>
-                  <FileCopyIcon fontSize="small" /> Ctrl + C: Copy
-                </Box>
-                <Box>
-                  <FileCopyIcon fontSize="small" /> Ctrl + V: Paste
-                </Box>
-                <Box>
-                  <PaletteIcon fontSize="small" /> Ctrl + S: Save
-                </Box>
-                <Box>
-                  <PaletteIcon fontSize="small" /> 1-9: Change Color
-                </Box>
-              </Stack>
-            </Box>
-          )}
-          {activeTab === 1 && (
-            <Box sx={{ height: "100%", overflowY: "auto" }}>
-              <Typography
-                variant="body1"
-                sx={{
-                  textAlign: "center",
-                  color: "#333",
-                  mb: 3,
-                  fontStyle: "italic",
-                }}
-              >
-                Customize your drafting experience here. Set defaults and
-                customize!
-              </Typography>
-              {/* <FormControlLabel
-                control={
-                  <Switch checked={darkMode} onChange={handleDarkModeToggle} />
-                }
-                label="Dark Mode"
-              /> */}
-              <FormControlLabel
-                control={
-                  <Switch checked={showGrid} onChange={handleShowGridToggle} />
-                }
-                label="Show Grid"
+    <Dialog open={open} onClose={onClose} maxWidth="md">
+      <DialogTitle>Flowchart Instructions</DialogTitle>
+      <DialogContent>
+        <div style={{ maxWidth: "600px" }}>
+          <h3>Basic Controls</h3>
+          <ul>
+            <li>Click and drag to move the canvas</li>
+            <li>Scroll to zoom in/out</li>
+            <li>Click on a node to select it</li>
+            <li>Drag from a node to create a connection</li>
+            <li>Press Delete to remove a selected node</li>
+            <li>Ctrl+C to copy a node, Ctrl+V to paste</li>
+          </ul>
+
+          <h3>Node Types</h3>
+          <ul>
+            <li>
+              <strong>Standard Node:</strong> Basic node for flowcharts and
+              mindmaps
+            </li>
+            <li>
+              <strong>Text Box:</strong> For adding notes and descriptions
+            </li>
+            <li>
+              <strong>Bounding Box:</strong> Container to group related nodes
+            </li>
+            <li>
+              <strong>Database:</strong> Represents a database in system diagrams
+            </li>
+            <li>
+              <strong>Person:</strong> Represents a person or role in
+              organizational charts
+            </li>
+          </ul>
+
+          <h3>Saving & Exporting</h3>
+          <ul>
+            <li>
+              <strong>Save:</strong> Saves your diagram to browser storage
+            </li>
+            <li>
+              <strong>Export as Image:</strong> Downloads the diagram as a PNG
+              image
+            </li>
+            <li>
+              <strong>Download JSON:</strong> Exports the diagram data as a JSON
+              file
+            </li>
+            <li>
+              <strong>Upload JSON:</strong> Imports a previously exported diagram
+            </li>
+          </ul>
+
+          <h3>Advanced Features</h3>
+          <FormControlLabel
+            control={
+              <Switch
+                checked={showShadowNodes}
+                onChange={toggleShowShadowNodes}
               />
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={showShadowNodes}
-                    onChange={toggleShowShadowNodes}
-                  />
-                }
-                label="Enable Shadow Node Assist"
+            }
+            label="Show Shadow Nodes (for quick node creation)"
+          />
+          <FormControlLabel
+            control={
+              <Switch
+                checked={showGrid}
+                onChange={handleShowGridToggle}
               />
-            </Box>
-          )}
-        </Box>
-        <Button
-          onClick={handleClose}
-          sx={{
-            mt: 2,
-            bgcolor: "green",
-            color: "white",
-            "&:hover": {
-              bgcolor: "orange",
-            },
-            borderRadius: "15px",
-            fontWeight: "bold",
-            alignSelf: "center",
-            position: "absolute",
-            right: 20,
-            bottom: 15,
-          }}
-        >
+            }
+            label="Show Grid"
+          />
+          <p>
+            <small>
+              When shadow nodes are enabled, they appear when you hover over existing
+              nodes, allowing for quick creation of connected nodes.
+            </small>
+          </p>
+        </div>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose} color="primary">
           Close
         </Button>
-      </Box>
-    </Modal>
+      </DialogActions>
+    </Dialog>
   );
 };
 

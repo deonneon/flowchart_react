@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import SaveIcon from "@mui/icons-material/Save";
 import RestoreIcon from "@mui/icons-material/Restore";
@@ -7,12 +7,14 @@ import UploadFileIcon from "@mui/icons-material/UploadFile";
 import ShowChartIcon from "@mui/icons-material/ShowChart";
 import GestureIcon from "@mui/icons-material/Gesture";
 import HorizontalRuleIcon from "@mui/icons-material/HorizontalRule";
+import BookmarkAddIcon from "@mui/icons-material/BookmarkAdd";
 import useStore from "../store";
 import ColorPalette from "./ColorPalette";
 import PowerInputIcon from "@mui/icons-material/PowerInput";
 import BorderStyleIcon from "@mui/icons-material/BorderStyle";
 import UndoIcon from "@mui/icons-material/Undo";
 import RedoIcon from "@mui/icons-material/Redo";
+import { Button, TextField, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
 
 const BottomToolbar: React.FC = () => {
   const {
@@ -25,7 +27,12 @@ const BottomToolbar: React.FC = () => {
     redo,
     canUndo,
     canRedo,
+    saveDiagram,
+    createCheckpoint
   } = useStore();
+
+  const [isSaveDialogOpen, setIsSaveDialogOpen] = useState(false);
+  const [diagramName, setDiagramName] = useState("");
 
   const saveToJson = () => {
     const { nodes, edges } = useStore.getState();
@@ -60,9 +67,25 @@ const BottomToolbar: React.FC = () => {
   };
 
   const saveToLocal = () => {
-    const { nodes, edges } = useStore.getState();
-    localStorage.setItem("reactFlowState", JSON.stringify({ nodes, edges }));
-    toast("Saved current state!");
+    setIsSaveDialogOpen(true);
+  };
+
+  const handleSaveDiagram = () => {
+    if (diagramName.trim()) {
+      saveDiagram(diagramName);
+      setDiagramName("");
+      setIsSaveDialogOpen(false);
+    } else {
+      toast.error("Please enter a name for your diagram");
+    }
+  };
+
+  const handleCreateCheckpoint = () => {
+    // Generate automatic name based on date and time
+    const now = new Date();
+    const autoName = `Checkpoint ${now.toLocaleDateString()} ${now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
+    createCheckpoint(autoName);
+    toast.success("Checkpoint created successfully!");
   };
 
   const loadFromLocal = () => {
@@ -156,8 +179,11 @@ const BottomToolbar: React.FC = () => {
         onChange={handleUploadJson}
         accept=".json"
       />
-      <button onClick={saveToLocal} title="Save Mind Map">
+      <button onClick={saveToLocal} title="Save Diagram">
         <SaveIcon />
+      </button>
+      <button onClick={handleCreateCheckpoint} title="Create Checkpoint">
+        <BookmarkAddIcon />
       </button>
       <button onClick={loadFromLocal} title="Restore">
         <RestoreIcon />
@@ -205,12 +231,12 @@ const BottomToolbar: React.FC = () => {
         </button>
       </div>
       <ColorPalette />
-      {/* <button onClick={undo} disabled={!canUndo} title="Undo (Ctrl+Z)">
+      <button onClick={undo} disabled={!canUndo} title="Undo (Ctrl+Z)">
         <UndoIcon />
       </button>
       <button onClick={redo} disabled={!canRedo} title="Redo (Ctrl+Y)">
         <RedoIcon />
-      </button> */}
+      </button>
       {selectedNode && selectedNode.type === "boundingbox" && (
         <div
           style={{
@@ -238,6 +264,28 @@ const BottomToolbar: React.FC = () => {
           </button>
         </div>
       )}
+
+      {/* Save Diagram Dialog */}
+      <Dialog open={isSaveDialogOpen} onClose={() => setIsSaveDialogOpen(false)}>
+        <DialogTitle>Save Diagram</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            margin="dense"
+            label="Diagram Name"
+            type="text"
+            fullWidth
+            value={diagramName}
+            onChange={(e) => setDiagramName(e.target.value)}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setIsSaveDialogOpen(false)}>Cancel</Button>
+          <Button onClick={handleSaveDiagram} color="primary">
+            Save
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };
