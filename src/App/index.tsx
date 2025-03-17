@@ -206,7 +206,10 @@ function Flow() {
           parentNode
         );
         if (childNodePosition) {
+          // Add the child node
           const newNodeId = addChildNode(parentNode, childNodePosition);
+          
+          // Only add shadow node if shadow nodes are enabled
           if (showShadowNodes) {
             // Calculate the vector from parent to child using the childNodePosition
             // since this is the relative position of the child to its parent
@@ -230,14 +233,21 @@ function Flow() {
                 y: distance * normalizedY,
               };
               
-              addShadowNode(newNodeId, shadowPosition);
+              // Add the shadow node after a short delay to ensure it's not immediately removed
+              setTimeout(() => {
+                addShadowNode(newNodeId, shadowPosition);
+              }, 50);
             } else {
               // Fallback to the original behavior if the magnitude is zero
               const shadowPosition = {
                 x: parentNode?.width ? parentNode.width + 30 : 100,
                 y: 0,
               };
-              addShadowNode(newNodeId, shadowPosition);
+              
+              // Add the shadow node after a short delay
+              setTimeout(() => {
+                addShadowNode(newNodeId, shadowPosition);
+              }, 50);
             }
           }
         }
@@ -251,9 +261,12 @@ function Flow() {
     (_, node) => {
       if (node.type === "shadow" && showShadowNodes) {
         convertShadowNode(node.id);
+      } else {
+        // Set the selected node ID, which will remove shadow nodes
+        setSelectedNodeId(node.id);
       }
     },
-    [convertShadowNode, showShadowNodes]
+    [convertShadowNode, showShadowNodes, setSelectedNodeId]
   );
 
   useEffect(() => {

@@ -176,7 +176,24 @@ const useStore = createWithEqualityFn<RFState>((set, get) => ({
     get().saveCurrentState();
   },
   selectedNodeId: "flow-root",
-  setSelectedNodeId: (nodeId) => set({ selectedNodeId: nodeId }),
+  setSelectedNodeId: (nodeId) => {
+    // Only remove shadow nodes when explicitly selecting a node (not during node creation)
+    // We can identify this by checking if the nodeId is different from the current selectedNodeId
+    set((state) => {
+      // Don't remove shadow nodes if the nodeId is null (deselection) or if it's a newly created node
+      const isExplicitSelection = nodeId !== state.selectedNodeId && 
+                                 !nodeId?.toString().includes('shadow-');
+      
+      if (isExplicitSelection) {
+        return {
+          selectedNodeId: nodeId,
+          nodes: state.nodes.filter((node) => node.type !== "shadow"),
+          edges: state.edges.filter((edge) => !edge.target.startsWith("shadow-"))
+        };
+      }
+      return { selectedNodeId: nodeId };
+    });
+  },
   nodes: [flowRootNode],
   edges: [],
   edgePathType: "straight",
