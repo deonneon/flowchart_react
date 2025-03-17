@@ -226,7 +226,7 @@ function Flow() {
               
               // Project the vector to determine shadow node position
               // Use the same distance as the current fixed offset (width + 30)
-              const distance = parentNode?.width ? parentNode.width + 30 : 100;
+              const distance = parentNode?.width ? parentNode.width - 30 : 40;
               
               const shadowPosition = {
                 x: distance * normalizedX,
