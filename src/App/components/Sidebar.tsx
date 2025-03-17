@@ -143,7 +143,7 @@ const Sidebar = () => {
       style={{ 
         width: isExpanded ? "300px" : "30px", 
         marginTop: "70px",
-        height: isExpanded ? "100vh" : "15vh", 
+        height: isExpanded ? "100vh" : "190px", 
         backgroundColor: "rgba(255, 255, 255, 0.8)", 
         borderRight: "1px solid #e0e0e0",
         boxShadow: "0 0 10px 0 rgba(0, 0, 0, 0.1)",
