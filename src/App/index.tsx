@@ -208,12 +208,37 @@ function Flow() {
         if (childNodePosition) {
           const newNodeId = addChildNode(parentNode, childNodePosition);
           if (showShadowNodes) {
-            // Check if shadow nodes should be added
-            const shadowPosition = {
-              x: parentNode?.width ? parentNode.width + 30 : 100,
-              y: 0,
-            };
-            addShadowNode(newNodeId, shadowPosition);
+            // Calculate the vector from parent to child using the childNodePosition
+            // since this is the relative position of the child to its parent
+            const vectorX = childNodePosition.x;
+            const vectorY = childNodePosition.y;
+            
+            // Normalize the vector
+            const magnitude = Math.sqrt(vectorX * vectorX + vectorY * vectorY);
+            
+            // Avoid division by zero
+            if (magnitude > 0) {
+              const normalizedX = vectorX / magnitude;
+              const normalizedY = vectorY / magnitude;
+              
+              // Project the vector to determine shadow node position
+              // Use the same distance as the current fixed offset (width + 30)
+              const distance = parentNode?.width ? parentNode.width + 30 : 100;
+              
+              const shadowPosition = {
+                x: distance * normalizedX,
+                y: distance * normalizedY,
+              };
+              
+              addShadowNode(newNodeId, shadowPosition);
+            } else {
+              // Fallback to the original behavior if the magnitude is zero
+              const shadowPosition = {
+                x: parentNode?.width ? parentNode.width + 30 : 100,
+                y: 0,
+              };
+              addShadowNode(newNodeId, shadowPosition);
+            }
           }
         }
       }

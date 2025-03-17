@@ -251,8 +251,15 @@ const useStore = createWithEqualityFn<RFState>((set, get) => ({
       style: { stroke: "#ccc", strokeDasharray: "5,5" },
     };
     set((state) => ({
-      nodes: [...state.nodes, shadowNode],
-      edges: [...state.edges, shadowEdge],
+      // Filter out any existing shadow nodes and their edges
+      nodes: [
+        ...state.nodes.filter((node) => node.type !== "shadow"),
+        shadowNode
+      ],
+      edges: [
+        ...state.edges.filter((edge) => !edge.target.startsWith("shadow-")),
+        shadowEdge
+      ],
     }));
   },
   convertShadowNode: (shadowNodeId: string) => {
@@ -299,7 +306,7 @@ const useStore = createWithEqualityFn<RFState>((set, get) => ({
     }));
     get().saveCurrentState();
   },
-  showShadowNodes: false,
+  showShadowNodes: true,
   toggleShowShadowNodes: () => {
     set((state) => ({
       showShadowNodes: !state.showShadowNodes,
