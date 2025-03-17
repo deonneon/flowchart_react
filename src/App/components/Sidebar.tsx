@@ -143,8 +143,8 @@ const Sidebar = () => {
       style={{ 
         width: isExpanded ? "300px" : "30px", 
         marginTop: "70px",
-        height: isExpanded ? "100vh" : "30vh", 
-        backgroundColor: "rgba(255, 255, 255, 0.5)", 
+        height: isExpanded ? "100vh" : "15vh", 
+        backgroundColor: "rgba(255, 255, 255, 0.8)", 
         borderRight: "1px solid #e0e0e0",
         boxShadow: "0 0 10px 0 rgba(0, 0, 0, 0.1)",
         borderRadius: "0 5px 5px 0",
@@ -156,6 +156,24 @@ const Sidebar = () => {
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
+      {/* Collapsed state label */}
+      {!isExpanded && (
+        <div style={{
+          position: "absolute",
+          top: "5%",
+          left: "2px",
+          writingMode: "vertical-rl",
+          textOrientation: "upright",
+          whiteSpace: "nowrap",
+          fontWeight: "bold",
+          fontSize: "12px",
+          color: "#355E3B",
+          letterSpacing: "0.1em"
+        }}>
+          LOAD DESIGN
+        </div>
+      )}
+      
       <div className="sidebar-content" style={{ 
         opacity: isExpanded ? 1 : 0,
         transition: "opacity 0.3s ease",

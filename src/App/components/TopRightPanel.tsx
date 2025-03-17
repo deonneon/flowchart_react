@@ -147,6 +147,7 @@ const TopRightPanel: React.FC<TopRightPanelProps> = ({
             onClick={toggleCheckpoints}
           >
             {showCheckpoints ? <BookmarkIcon /> : <BookmarkBorderIcon />}
+            Review Checkpoints
           </Button>
         </Tooltip>
       )}
