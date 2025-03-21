@@ -11,6 +11,7 @@ import ReactFlow, {
   MiniMap,
   Background,
   NodeMouseHandler,
+  Connection,
 } from "reactflow";
 import { shallow } from "zustand/shallow";
 
@@ -70,6 +71,7 @@ function Flow() {
     selectedNodeId,
     deleteNode,
     showShadowNodes,
+    addEdge,
   } = useStore(
     (state) => ({
       nodes: state.nodes,
@@ -85,34 +87,36 @@ function Flow() {
       selectedNodeId: state.selectedNodeId,
       deleteNode: state.deleteNode,
       showShadowNodes: state.showShadowNodes,
+      addEdge: state.addEdge,
     }),
     shallow
   );
   const { screenToFlowPosition, setCenter } = useReactFlow();
   const connectingNodeId = useRef<string | null>(null);
+  const lastConnectionTimestamp = useRef<number>(0);
   const [showGrid, setShowGrid] = useState(true);
   const [showCheckpoints, setShowCheckpoints] = useState(false);
 
   // Load checkpoints from localStorage on component mount
   useEffect(() => {
     const loadCheckpointsFromStorage = () => {
-      const checkpointKeys = Object.keys(localStorage).filter(key => 
-        key.startsWith('flowchart_checkpoint_')
+      const checkpointKeys = Object.keys(localStorage).filter((key) =>
+        key.startsWith("flowchart_checkpoint_")
       );
-      
+
       if (checkpointKeys.length > 0) {
-        const loadedCheckpoints = checkpointKeys.map(key => {
-          const id = key.replace('flowchart_checkpoint_', '');
+        const loadedCheckpoints = checkpointKeys.map((key) => {
+          const id = key.replace("flowchart_checkpoint_", "");
           let name = `Checkpoint ${id.substring(0, 4)}`;
           let timestamp = Date.now();
           let preview: string | undefined;
-          
+
           // Try to load full checkpoint data
           try {
             const data = localStorage.getItem(key);
             if (data) {
               const parsed = JSON.parse(data);
-              
+
               // Extract metadata
               if (parsed.name) name = parsed.name;
               if (parsed.timestamp) timestamp = parsed.timestamp;
@@ -121,21 +125,21 @@ function Flow() {
           } catch (error) {
             console.error("Error loading checkpoint data:", error);
           }
-          
+
           return {
             id,
             name,
             timestamp,
-            preview
+            preview,
           };
         });
-        
+
         // Sort by most recent first and update state
         loadedCheckpoints.sort((a, b) => b.timestamp - a.timestamp);
         useStore.setState({ checkpoints: loadedCheckpoints });
       }
     };
-    
+
     loadCheckpointsFromStorage();
   }, []);
 
@@ -181,8 +185,16 @@ function Flow() {
     });
 
     return {
-      x: panePosition.x - parentNode.positionAbsolute.x + parentNode.width / 2 - parentNode.width,
-      y: panePosition.y - parentNode.positionAbsolute.y + parentNode.height / 2 - parentNode.height,
+      x:
+        panePosition.x -
+        parentNode.positionAbsolute.x +
+        parentNode.width / 2 -
+        parentNode.width,
+      y:
+        panePosition.y -
+        parentNode.positionAbsolute.y +
+        parentNode.height / 2 -
+        parentNode.height,
     };
   };
 
@@ -190,13 +202,35 @@ function Flow() {
     connectingNodeId.current = nodeId;
   }, []);
 
+  const onConnect = useCallback(
+    (connection: Connection) => {
+      if (connection.source && connection.target) {
+        // Record the time when a connection was made
+        lastConnectionTimestamp.current = Date.now();
+        addEdge(connection.source, connection.target);
+      }
+    },
+    [addEdge]
+  );
+
   const onConnectEnd: OnConnectEnd = useCallback(
     (event: MouseEvent | TouchEvent) => {
+      // Check if a connection was made within the last 300ms
+      const connectionJustMade =
+        Date.now() - lastConnectionTimestamp.current < 300;
+
+      // If we just made a connection, don't create a node
+      if (connectionJustMade) {
+        connectingNodeId.current = null;
+        return;
+      }
+
       const { nodeInternals } = store.getState();
       const parentNode = connectingNodeId.current
         ? nodeInternals.get(connectingNodeId.current)
         : null;
 
+      // Only proceed if we're connecting to the pane and have a valid parent node
       if (
         (event.target as Element).classList.contains("react-flow__pane") &&
         parentNode
@@ -208,31 +242,31 @@ function Flow() {
         if (childNodePosition) {
           // Add the child node
           const newNodeId = addChildNode(parentNode, childNodePosition);
-          
+
           // Only add shadow node if shadow nodes are enabled
           if (showShadowNodes) {
             // Calculate the vector from parent to child using the childNodePosition
             // since this is the relative position of the child to its parent
             const vectorX = childNodePosition.x;
             const vectorY = childNodePosition.y;
-            
+
             // Normalize the vector
             const magnitude = Math.sqrt(vectorX * vectorX + vectorY * vectorY);
-            
+
             // Avoid division by zero
             if (magnitude > 0) {
               const normalizedX = vectorX / magnitude;
               const normalizedY = vectorY / magnitude;
-              
+
               // Project the vector to determine shadow node position
               // Use the same distance as the current fixed offset (width + 30)
               const distance = parentNode?.width ? parentNode.width - 30 : 40;
-              
+
               const shadowPosition = {
                 x: distance * normalizedX,
                 y: distance * normalizedY,
               };
-              
+
               // Add the shadow node after a short delay to ensure it's not immediately removed
               setTimeout(() => {
                 addShadowNode(newNodeId, shadowPosition);
@@ -243,7 +277,7 @@ function Flow() {
                 x: parentNode?.width ? parentNode.width + 30 : 100,
                 y: 0,
               };
-              
+
               // Add the shadow node after a short delay
               setTimeout(() => {
                 addShadowNode(newNodeId, shadowPosition);
@@ -304,6 +338,7 @@ function Flow() {
       onConnectStart={onConnectStart}
       onConnectEnd={onConnectEnd}
       onNodeClick={onNodeClick}
+      onConnect={onConnect}
       nodeTypes={nodeTypes}
       edgeTypes={edgeTypes}
       nodeOrigin={nodeOrigin}
@@ -321,9 +356,9 @@ function Flow() {
         className="header"
         style={{ display: "flex", alignItems: "center" }}
       >
-        <TopRightPanel 
-          showGrid={showGrid} 
-          setShowGrid={setShowGrid} 
+        <TopRightPanel
+          showGrid={showGrid}
+          setShowGrid={setShowGrid}
           showCheckpoints={showCheckpoints}
           toggleCheckpoints={toggleCheckpoints}
         />

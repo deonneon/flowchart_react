@@ -181,14 +181,17 @@ const useStore = createWithEqualityFn<RFState>((set, get) => ({
     // We can identify this by checking if the nodeId is different from the current selectedNodeId
     set((state) => {
       // Don't remove shadow nodes if the nodeId is null (deselection) or if it's a newly created node
-      const isExplicitSelection = nodeId !== state.selectedNodeId && 
-                                 !nodeId?.toString().includes('shadow-');
-      
+      const isExplicitSelection =
+        nodeId !== state.selectedNodeId &&
+        !nodeId?.toString().includes("shadow-");
+
       if (isExplicitSelection) {
         return {
           selectedNodeId: nodeId,
           nodes: state.nodes.filter((node) => node.type !== "shadow"),
-          edges: state.edges.filter((edge) => !edge.target.startsWith("shadow-"))
+          edges: state.edges.filter(
+            (edge) => !edge.target.startsWith("shadow-")
+          ),
         };
       }
       return { selectedNodeId: nodeId };
@@ -271,11 +274,11 @@ const useStore = createWithEqualityFn<RFState>((set, get) => ({
       // Filter out any existing shadow nodes and their edges
       nodes: [
         ...state.nodes.filter((node) => node.type !== "shadow"),
-        shadowNode
+        shadowNode,
       ],
       edges: [
         ...state.edges.filter((edge) => !edge.target.startsWith("shadow-")),
-        shadowEdge
+        shadowEdge,
       ],
     }));
   },
@@ -336,7 +339,7 @@ const useStore = createWithEqualityFn<RFState>((set, get) => ({
     if (nodeToClone) {
       // Calculate the height of the node (default to 40 if not available)
       const nodeHeight = nodeToClone.height || 40;
-      
+
       const newNode = {
         id: nanoid(),
         type: nodeToClone.type,
@@ -520,27 +523,29 @@ const useStore = createWithEqualityFn<RFState>((set, get) => ({
     const { nodes, edges, diagramType } = get();
     const diagramId = `flowchart_diagram_${nanoid(8)}`;
     const timestamp = Date.now();
-    
+
     const diagramData = {
       name,
       timestamp,
       diagramType,
       nodes: deepCopy(nodes),
-      edges: deepCopy(edges)
+      edges: deepCopy(edges),
     };
-    
+
     // Save initial data without preview
     localStorage.setItem(diagramId, JSON.stringify(diagramData));
-    
+
     // Generate preview image
     try {
-      const viewport = document.querySelector(".react-flow__viewport") as HTMLElement;
-      
+      const viewport = document.querySelector(
+        ".react-flow__viewport"
+      ) as HTMLElement;
+
       if (viewport) {
         // Define preview dimensions
         const previewWidth = 200;
         const previewHeight = 150;
-        
+
         // Get the bounds of all nodes to ensure we capture the entire diagram
         const nodesBounds = getRectOfNodes(nodes);
         const transform = getTransformForBounds(
@@ -550,7 +555,7 @@ const useStore = createWithEqualityFn<RFState>((set, get) => ({
           0.5,
           2
         );
-        
+
         // Generate the preview image
         toPng(viewport, {
           backgroundColor: "white",
@@ -562,42 +567,44 @@ const useStore = createWithEqualityFn<RFState>((set, get) => ({
           pixelRatio: 1,
           quality: 0.5,
           canvasWidth: previewWidth,
-          canvasHeight: previewHeight
-        }).then(dataUrl => {
-          // Update the diagram data with the preview
-          const updatedData = { ...diagramData, preview: dataUrl };
-          
-          // Update in localStorage
-          localStorage.setItem(diagramId, JSON.stringify(updatedData));
-          
-          // Dispatch a custom event to notify components that a diagram was saved
-          window.dispatchEvent(new CustomEvent('diagramSaved'));
-        }).catch(error => {
-          console.error("Error generating diagram preview:", error);
-          // Still dispatch the event even if preview generation fails
-          window.dispatchEvent(new CustomEvent('diagramSaved'));
-        });
+          canvasHeight: previewHeight,
+        })
+          .then((dataUrl) => {
+            // Update the diagram data with the preview
+            const updatedData = { ...diagramData, preview: dataUrl };
+
+            // Update in localStorage
+            localStorage.setItem(diagramId, JSON.stringify(updatedData));
+
+            // Dispatch a custom event to notify components that a diagram was saved
+            window.dispatchEvent(new CustomEvent("diagramSaved"));
+          })
+          .catch((error) => {
+            console.error("Error generating diagram preview:", error);
+            // Still dispatch the event even if preview generation fails
+            window.dispatchEvent(new CustomEvent("diagramSaved"));
+          });
       } else {
         // If viewport not found, still dispatch the event
-        window.dispatchEvent(new CustomEvent('diagramSaved'));
+        window.dispatchEvent(new CustomEvent("diagramSaved"));
       }
     } catch (error) {
       console.error("Error in diagram preview generation:", error);
       // Still dispatch the event even if preview generation fails
-      window.dispatchEvent(new CustomEvent('diagramSaved'));
+      window.dispatchEvent(new CustomEvent("diagramSaved"));
     }
-    
+
     toast.success(`Diagram "${name}" saved!`);
     return diagramId;
   },
-  
+
   loadSavedDiagram: (diagramId: string) => {
     const diagramData = localStorage.getItem(diagramId);
     if (!diagramData) {
       toast.error("Diagram not found!");
       return;
     }
-    
+
     try {
       const { nodes, edges, diagramType, name } = JSON.parse(diagramData);
       set({
@@ -605,7 +612,7 @@ const useStore = createWithEqualityFn<RFState>((set, get) => ({
         edges,
         diagramType: diagramType || "flow",
         past: [],
-        future: []
+        future: [],
       });
       toast.success(`Loaded diagram: ${name}`);
     } catch (error) {
@@ -613,46 +620,51 @@ const useStore = createWithEqualityFn<RFState>((set, get) => ({
       console.error("Error loading diagram:", error);
     }
   },
-  
+
   deleteSavedDiagram: (diagramId: string) => {
     localStorage.removeItem(diagramId);
-    window.dispatchEvent(new CustomEvent('diagramSaved'));
+    window.dispatchEvent(new CustomEvent("diagramSaved"));
     toast.success("Diagram deleted!");
   },
-  
+
   createCheckpoint: (name: string) => {
     const { nodes, edges, checkpoints } = get();
     const checkpointId = nanoid(8);
     const timestamp = Date.now();
-    
+
     // Create a new checkpoint object without preview initially
     const newCheckpoint: Checkpoint = {
       id: checkpointId,
       name,
-      timestamp
+      timestamp,
     };
-    
+
     // Store checkpoint data
-    localStorage.setItem(`flowchart_checkpoint_${checkpointId}`, JSON.stringify({
-      nodes: deepCopy(nodes),
-      edges: deepCopy(edges),
-      name,
-      timestamp
-    }));
-    
+    localStorage.setItem(
+      `flowchart_checkpoint_${checkpointId}`,
+      JSON.stringify({
+        nodes: deepCopy(nodes),
+        edges: deepCopy(edges),
+        name,
+        timestamp,
+      })
+    );
+
     // Update checkpoints list immediately
     set({
-      checkpoints: [...checkpoints, newCheckpoint]
+      checkpoints: [...checkpoints, newCheckpoint],
     });
-    
+
     // Generate preview image asynchronously
     try {
-      const viewport = document.querySelector(".react-flow__viewport") as HTMLElement;
+      const viewport = document.querySelector(
+        ".react-flow__viewport"
+      ) as HTMLElement;
       if (viewport) {
         // Define preview dimensions
         const previewWidth = 200;
         const previewHeight = 150;
-        
+
         // Get the bounds of all nodes to ensure we capture the entire diagram
         const nodesBounds = getRectOfNodes(nodes);
         const transform = getTransformForBounds(
@@ -662,7 +674,7 @@ const useStore = createWithEqualityFn<RFState>((set, get) => ({
           0.5,
           2
         );
-        
+
         // Generate the preview image
         toPng(viewport, {
           backgroundColor: "white",
@@ -674,66 +686,78 @@ const useStore = createWithEqualityFn<RFState>((set, get) => ({
           pixelRatio: 1,
           quality: 0.5,
           canvasWidth: previewWidth,
-          canvasHeight: previewHeight
-        }).then(dataUrl => {
-          // Update the checkpoint with the preview
-          const updatedCheckpoint = { ...newCheckpoint, preview: dataUrl };
-          
-          // Update in state
-          set(state => ({
-            checkpoints: state.checkpoints.map(cp => 
-              cp.id === checkpointId ? updatedCheckpoint : cp
-            )
-          }));
-          
-          // Update in localStorage
-          const checkpointData = localStorage.getItem(`flowchart_checkpoint_${checkpointId}`);
-          if (checkpointData) {
-            const data = JSON.parse(checkpointData);
-            localStorage.setItem(`flowchart_checkpoint_${checkpointId}`, JSON.stringify({
-              ...data,
-              preview: dataUrl
+          canvasHeight: previewHeight,
+        })
+          .then((dataUrl) => {
+            // Update the checkpoint with the preview
+            const updatedCheckpoint = { ...newCheckpoint, preview: dataUrl };
+
+            // Update in state
+            set((state) => ({
+              checkpoints: state.checkpoints.map((cp) =>
+                cp.id === checkpointId ? updatedCheckpoint : cp
+              ),
             }));
-          }
-        }).catch(error => {
-          console.error("Error generating checkpoint preview:", error);
-        });
+
+            // Update in localStorage
+            const checkpointData = localStorage.getItem(
+              `flowchart_checkpoint_${checkpointId}`
+            );
+            if (checkpointData) {
+              const data = JSON.parse(checkpointData);
+              localStorage.setItem(
+                `flowchart_checkpoint_${checkpointId}`,
+                JSON.stringify({
+                  ...data,
+                  preview: dataUrl,
+                })
+              );
+            }
+          })
+          .catch((error) => {
+            console.error("Error generating checkpoint preview:", error);
+          });
       }
     } catch (error) {
       console.error("Error in checkpoint preview generation:", error);
     }
-    
+
     toast.success(`Checkpoint "${name}" created!`);
     return checkpointId;
   },
-  
+
   loadCheckpoint: (checkpointId: string) => {
-    const checkpointData = localStorage.getItem(`flowchart_checkpoint_${checkpointId}`);
+    const checkpointData = localStorage.getItem(
+      `flowchart_checkpoint_${checkpointId}`
+    );
     if (!checkpointData) {
       toast.error("Checkpoint not found!");
       return;
     }
-    
+
     try {
-      const { nodes, edges, preview, name, timestamp } = JSON.parse(checkpointData);
-      
+      const { nodes, edges, preview, name, timestamp } =
+        JSON.parse(checkpointData);
+
       // Update the checkpoint in state with all available data
-      set(state => ({
-        checkpoints: state.checkpoints.map(cp => 
-          cp.id === checkpointId ? { 
-            ...cp, 
-            preview, 
-            name: name || cp.name,
-            timestamp: timestamp || cp.timestamp
-          } : cp
-        )
+      set((state) => ({
+        checkpoints: state.checkpoints.map((cp) =>
+          cp.id === checkpointId
+            ? {
+                ...cp,
+                preview,
+                name: name || cp.name,
+                timestamp: timestamp || cp.timestamp,
+              }
+            : cp
+        ),
       }));
-      
+
       set({
         nodes,
         edges,
         past: [],
-        future: []
+        future: [],
       });
       toast.success("Checkpoint restored!");
     } catch (error) {
@@ -741,18 +765,18 @@ const useStore = createWithEqualityFn<RFState>((set, get) => ({
       console.error("Error loading checkpoint:", error);
     }
   },
-  
+
   deleteCheckpoint: (checkpointId: string) => {
     // Remove the checkpoint data from localStorage
     localStorage.removeItem(`flowchart_checkpoint_${checkpointId}`);
-    
+
     // Remove the checkpoint from state
     set((state) => ({
-      checkpoints: state.checkpoints.filter(cp => cp.id !== checkpointId)
+      checkpoints: state.checkpoints.filter((cp) => cp.id !== checkpointId),
     }));
-    
+
     toast.success("Checkpoint deleted!");
-  }
+  },
 }));
 
 // Helper function for deep copying
