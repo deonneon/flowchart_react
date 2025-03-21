@@ -53,10 +53,17 @@ function getHandleCoordsByPosition(
     throw new Error(`Handle bounds not found for position ${handlePosition}`);
   }
 
-  // all handles are of type source, that's why we use handleBounds.source here
-  const handle = node[internalsSymbol].handleBounds.source.find(
+  // Try to find source handle first
+  let handle = node[internalsSymbol].handleBounds.source?.find(
     (h) => h.position === handlePosition
   );
+
+  // If source handle not found, try target handle
+  if (!handle && node[internalsSymbol].handleBounds.target) {
+    handle = node[internalsSymbol].handleBounds.target.find(
+      (h) => h.position === handlePosition
+    );
+  }
 
   if (!handle) {
     throw new Error(`Handle not found for position ${handlePosition}`);

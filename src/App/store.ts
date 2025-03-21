@@ -268,6 +268,8 @@ const useStore = createWithEqualityFn<RFState>((set, get) => ({
       id: `shadow-edge-${nanoid()}`,
       source: parentId,
       target: shadowNodeId,
+      sourceHandle: null,
+      targetHandle: "shadow-target-top",
       style: { stroke: "#ccc", strokeDasharray: "5,5" },
     };
     set((state) => ({
