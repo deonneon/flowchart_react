@@ -2,6 +2,9 @@
   "name": "thoughtmapper",
   "private": true,
   "version": "0.0.0",
+  "overrides": {
+    "tar": "^7.5.4"
+  },
   "main": "main.js",
   "type": "commonjs",
   "scripts": {
